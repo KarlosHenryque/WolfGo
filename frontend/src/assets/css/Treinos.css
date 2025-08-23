@@ -1,0 +1,52 @@
+.input-buscar-treino {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    height: 50vh;
+    color: #ffff;
+}
+
+.input-buscar-treino input {
+    padding: 10px;
+    width: 600px;
+    border-radius: 10px 0 0 10px;
+    border: none;
+    background-color: #ffb700;
+    color: #ffff;
+    border-right: 1px solid #ffff;
+}
+
+.input-buscar-treino input:focus {
+    border-right: 1px solid #ffff;
+    padding: 12px;
+    outline: none;
+}
+
+.input-buscar-treino input:hover {
+    border-right: 1px solid #ffff;
+    padding: 12px;
+    outline: none;
+}
+
+.input-buscar-treino button {
+    width: 100px;
+    border-radius: 0 10px 10px 0;
+    background-color: #ffb700;
+    border-left: 1px solid #fff;
+    color: #ffff;
+    border: none;
+    font-size: 30px;
+}
+
+.input-buscar-treino button:focus {
+    border: none;
+    outline: none;
+}
+
+.input-buscar-treino button:hover {
+    border-right: 1px solid #ffff;
+    padding: 4px;
+    outline: none;
+}
