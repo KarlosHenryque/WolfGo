@@ -2,6 +2,7 @@
     background-color: #000 !important;
     color: rgb(255, 255, 255) !important;
     width: 100vh;
+    border-radius: 15px;
 }
 
 .modal-formulario-user {

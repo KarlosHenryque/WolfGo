@@ -1,10 +1,14 @@
 import React from "react";
 import Swal from "sweetalert2";
+import { useNavigate } from 'react-router-dom';
 
 import '../assets/css/Treinos.css'
 import '../assets/css/SwalFire.css'
 
 function Treino() {
+
+  const navigate = useNavigate();
+
   const modalFormulario = () => {
     Swal.fire({
       title: 'Formulário',
@@ -12,7 +16,7 @@ function Treino() {
         <div class="modal-formulario-user">
                 <input type="text" id="nomeTreino" class="input" placeholder="Nome do treino">
 
-                <input type="date" id="dataNascimento" class="input " placeholder="Data de nascimento">
+                <input type="text" id="dataNascimento" class="input " placeholder="DD/MM/AAAA" maxlength="10">
 
                 <input type="text" id="objetivo" class="input" placeholder="Objetivo">
 
@@ -83,7 +87,10 @@ function Treino() {
           return response.json();
         })
         .then(data => {
-          Swal.fire('Sucesso!', 'Formulario salvo com sucesso.', 'success');
+          Swal.fire('Sucesso!', 'Formulario salvo com sucesso.', 'success').then(() => {
+            Swal.close();
+            navigate('/FixaTreino')
+          });
         })
         .catch(error => {
           Swal.fire('Erro', `Não foi possível salvar`, 'error');
@@ -94,11 +101,13 @@ function Treino() {
 
   return (
     <div className="container-treino">
-      <div className="input-container">
+
+      <div className="input-buscar-treino">
         <input type="text" placeholder="Buscar treino" />
         <button onClick={modalFormulario}>+</button>
       </div>
     </div>
+
   );
 }
 
