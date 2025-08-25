@@ -11,7 +11,6 @@ router.post('/', (req, res) => {
     return res.status(400).json({ error: 'Treino inválido.' });
   }
 
-  // Se o campo Treino vier como string JSON, faz o parse
   if (typeof treino.Treino === 'string') {
     try {
       const cleaned = treino.Treino
@@ -25,19 +24,42 @@ router.post('/', (req, res) => {
     }
   }
 
-  // ✅ Removido o .some(), agora sempre sobrescreve
   treinoSalvo = treino;
 
   res.json({ message: 'Treino salvo com sucesso!' });
 });
 
 // GET retorna o treino mais recente
-router.get('/', (req, res) => {
-  if (!treinoSalvo) {
-    return res.status(404).json({ error: 'Nenhum treino salvo ainda.' });
-  }
+router.get('/', async (req, res) => {
+  const maxEsperar = 30000; 
+  const intervalo = 1000;  
+  const inicio = Date.now();
 
-  res.json({ treino: treinoSalvo });
+  const esperarTreino = () => {
+    return new Promise((resolve) => {
+      const checar = () => {
+        if (treinoSalvo) {
+          return resolve(treinoSalvo);
+        }
+
+        if (Date.now() - inicio >= maxEsperar) {
+          return resolve(null); 
+        }
+
+        setTimeout(checar, intervalo);
+      };
+
+      checar();
+    });
+  };
+
+  const treino = await esperarTreino();
+
+  if (treino) {
+    res.json({ treino });
+  } else {
+    res.status(204).json({ message: 'Treino ainda não disponível.' });
+  }
 });
 
 module.exports = router;

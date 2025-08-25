@@ -89,7 +89,8 @@ function Treino() {
         .then(data => {
           Swal.fire('Sucesso!', 'Formulario salvo com sucesso.', 'success').then(() => {
             Swal.close();
-            navigate('/FixaTreino')
+            navigate('/FixaTreino');
+            window.location.reload();
           });
         })
         .catch(error => {

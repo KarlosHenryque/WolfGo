@@ -9,15 +9,10 @@ function FixaTreino() {
 
   useEffect(() => {
     const fetchTreino = async () => {
-      const startTime = Date.now();
-
       Swal.fire({
-        html: '<h2 style="font-size:40px; margin: 0 0 50px; color: #ffb700;">Carregando treino...</h2>',
+        html: '<h2 style="font-size:40px; margin: 0 0 50px; color: #ffb700;">Aguardando geração do treino...</h2>',
         width: '900px',
         padding: '3em',
-        customClass: {
-          popup: 'my-swal-popup'
-        },
         allowOutsideClick: false,
         didOpen: () => {
           Swal.showLoading();
@@ -26,37 +21,30 @@ function FixaTreino() {
 
       try {
         const response = await axios.get('http://localhost:5000/api/treino');
-        
-        const treinoData = response.data.treino || response.data.treinos;
+
+        const treinoData = response.data.treino?.Treino || response.data.treino;
 
         if (!treinoData) {
-          setErro('Nenhum treino encontrado.');
+          setErro('Treino não encontrado.');
         } else {
-          if (treinoData.Treino) {
-            setTreino(treinoData.Treino);
-          }
+          setTreino(treinoData);
         }
       } catch (error) {
-        console.error(error);
-        setErro('Erro ao carregar o treino.');
-      } finally {
-        const elapsed = Date.now() - startTime;
-        const remainingTime = 5000 - elapsed;
-
-        if (remainingTime > 0) {
-          setTimeout(() => {
-            Swal.close();
-            setLoading(false);
-          }, remainingTime);
+        if (error.response && error.response.status === 204) {
+          setErro('O treino ainda não está disponível. Tente novamente em instantes.');
         } else {
-          Swal.close();
-          setLoading(false);
+          console.error(error);
+          setErro('Erro ao buscar o treino.');
         }
+      } finally {
+        Swal.close();
+        setLoading(false);
       }
     };
 
     fetchTreino();
   }, []);
+
 
   if (loading) {
     return null; // Ou um spinner, se quiser

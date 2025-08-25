@@ -11,7 +11,7 @@ router.post('/formularioUser', async (req, res) => {
     console.log('Dados Recebidos com sucesso', dadosFormularioUser);
 
     try {
-        const n8nWebhookUrl = 'http://localhost:5678/webhook-test/fomularioUser';
+        const n8nWebhookUrl = 'http://localhost:5678/webhook/fomularioUser';
 
         await axios.post(n8nWebhookUrl, dadosFormularioUser);
 
