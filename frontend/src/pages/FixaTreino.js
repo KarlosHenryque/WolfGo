@@ -1,86 +1,81 @@
 import React, { useEffect, useState } from "react";
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'
 
 function FixaTreino() {
-  const [treino, setTreino] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [erro, setErro] = useState(null);
+    const [treino, setTreino] = useState(null);
+    const [erro, setErro] = useState(null);
+   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchTreino = async () => {
-      Swal.fire({
-        html: '<h2 style="font-size:40px; margin: 0 0 50px; color: #ffb700;">Aguardando geração do treino...</h2>',
-        width: '900px',
-        padding: '3em',
-        allowOutsideClick: false,
-        didOpen: () => {
-          Swal.showLoading();
-        }
-      });
+    useEffect(() => {
+        Swal.fire({
+            html: '<h2 style="font-size:40px; margin: 0 0 50px; color: #ffb700;">Aguardando geração do treino...</h2>',
+            width: '900px',
+            padding: '3em',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
 
-      try {
-        const response = await axios.get('http://localhost:5000/api/treino');
+        const fetchTreino = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/api/treino/');
+                
+                Swal.close();
 
-        const treinoData = response.data.treino?.Treino || response.data.treino;
+                const treinoData = response.data.treino?.Treino || response.data.treino;
+                if (treinoData) {
+                    setTreino(treinoData);
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Ops...',
+                        text: 'Tente novamente mais tarde',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        navigate('/')
+                    })
+                }
+            } catch (error) {
+                Swal.close();
+            }
+        };
+        fetchTreino();
+    }, [navigate]);
 
-        if (!treinoData) {
-          setErro('Treino não encontrado.');
-        } else {
-          setTreino(treinoData);
-        }
-      } catch (error) {
-        if (error.response && error.response.status === 204) {
-          setErro('O treino ainda não está disponível. Tente novamente em instantes.');
-        } else {
-          console.error(error);
-          setErro('Erro ao buscar o treino.');
-        }
-      } finally {
-        Swal.close();
-        setLoading(false);
-      }
-    };
+    if (erro) {
+        return <div className="erro">{erro}</div>;
+    }
 
-    fetchTreino();
-  }, []);
-
-
-  if (loading) {
-    return null; // Ou um spinner, se quiser
-  }
-
-  if (erro) {
-    return <div className="erro">{erro}</div>;
-  }
-
-  return (
-    <div className="treino-container">
-      <h1>Seu Treino</h1>
-      {treino ? (
-        <div>
-          {Array.isArray(treino) ? (
-            treino.map((item, index) => (
-              <div key={index} className="treino-item">
-                <h3>{item.dia}</h3>
-                <ul>
-                  {item.exercicios.map((exercicio, i) => (
-                    <li key={i}>
-                      {exercicio.nome} - {exercicio.series}x{exercicio.repeticoes}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))
-          ) : (
-            <pre>{JSON.stringify(treino, null, 2)}</pre>
-          )}
+    return (
+        <div className="treino-container">
+            <h1>Seu Treino</h1>
+            {treino ? (
+                <div>
+                    {Array.isArray(treino) ? (
+                        treino.map((item, index) => (
+                            <div key={index} className="treino-item">
+                                <h3>{item.dia}</h3>
+                                <ul>
+                                    {item.exercicios.map((exercicio, i) => (
+                                        <li key={i}>
+                                            {exercicio.nome} - {exercicio.series}x{exercicio.repeticoes}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))
+                    ) : (
+                        <pre>{JSON.stringify(treino, null, 2)}</pre>
+                    )}
+                </div>
+            ) : (
+                <p>Nenhum treino disponível.</p>
+            )}
         </div>
-      ) : (
-        <p>Nenhum treino disponível.</p>
-      )}
-    </div>
-  );
+    );
 }
 
 export default FixaTreino;

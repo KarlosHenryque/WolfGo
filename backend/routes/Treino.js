@@ -31,19 +31,22 @@ router.post('/', (req, res) => {
 
 // GET retorna o treino mais recente
 router.get('/', async (req, res) => {
-  const maxEsperar = 30000; 
-  const intervalo = 1000;  
+  const maxEsperar = 30000;
+  const intervalo = 1000;
   const inicio = Date.now();
 
   const esperarTreino = () => {
     return new Promise((resolve) => {
       const checar = () => {
         if (treinoSalvo) {
-          return resolve(treinoSalvo);
+
+          const treinoParaEnviar = treinoSalvo;
+          treinoSalvo = null; 
+          return resolve(treinoParaEnviar);
         }
 
         if (Date.now() - inicio >= maxEsperar) {
-          return resolve(null); 
+          return resolve(null);
         }
 
         setTimeout(checar, intervalo);
