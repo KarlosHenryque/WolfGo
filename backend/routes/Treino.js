@@ -30,7 +30,6 @@ router.post('/', (req, res) => {
 });
 
 // GET retorna o treino mais recente
-// GET retorna o treino mais recente
 router.get('/', async (req, res) => {
   const maxEsperar = 30000;
   const intervalo = 1000;
@@ -40,10 +39,9 @@ router.get('/', async (req, res) => {
     return new Promise((resolve) => {
       const checar = () => {
         if (treinoSalvo) {
-          // Aqui a mágica acontece.
-          // Quando o treino é recebido, retornamos o valor e o resetamos.
+
           const treinoParaEnviar = treinoSalvo;
-          treinoSalvo = null; // Resetamos a variável para esperar pelo próximo treino.
+          treinoSalvo = null; 
           return resolve(treinoParaEnviar);
         }
 

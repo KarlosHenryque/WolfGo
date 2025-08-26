@@ -52,7 +52,7 @@ function Treino() {
       confirmButtonText: 'Salvar',
       cancelButtonText: 'Cancelar',
       reverseButtons: true,
-      preConfirm: () => {
+     preConfirm: () => {
         const nome = Swal.getPopup().querySelector('#nomeTreino').value;
         const dataNascimento = Swal.getPopup().querySelector('#dataNascimento').value;
         const objetivo = Swal.getPopup().querySelector('#objetivo').value;
@@ -64,11 +64,20 @@ function Treino() {
         const peso = Swal.getPopup().querySelector('#peso').value;
 
         if (!nome || !dataNascimento || !objetivo || !experiencia || !diasTreino || !duracao || !altura || !peso) {
-          Swal.showValidationMessage(`Por favor, preencha todos os campos obrigatórios`);
+          Swal.showValidationMessage('Por favor, preencha todos os campos obrigatórios.');
           return false;
         }
 
-        return { nome, dataNascimento, objetivo, experiencia, diasTreino, duracao, algumaLesao, altura, peso };
+        const dataRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
+        if (!dataRegex.test(dataNascimento)) {
+          Swal.showValidationMessage('Data inválida. Use o formato DD/MM/AAAA.');
+          return false;
+        }
+
+        return {
+          nome, dataNascimento, objetivo, experiencia,
+          diasTreino, duracao, algumaLesao, altura, peso
+        };
       }
     }).then((result) => {
       if (result.isConfirmed) {
