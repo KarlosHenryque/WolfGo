@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import '../assets/css/Login.css';
 
 import img_corredor from '../assets/img/Corredor_login.png';
-import { FaEnvelope, FaLock } from 'react-icons/fa'; // usando react-icons
+import logo from '../assets/img/Logo.png';
+import bandeira_brasil from '../assets/img/bandeira_brasil.png';
+import { FaEnvelope, FaLock } from 'react-icons/fa'; 
 
 function Login() {
   const navigate = useNavigate();
@@ -46,12 +48,14 @@ function Login() {
 
       <div className="login-right">
         <div className="login-header">
-          <h2 className="logo">WolfGO</h2>
-          <span className="lang-switch">🇧🇷 BR</span>
+          <h2 className="logo"><img className="lobo-img" src={logo} alt="Lobo" /> WolfGO</h2>
+          <span className="lang-switch"><img src={bandeira_brasil} alt="Bandeira do Brasil" /> BR</span>
         </div>
 
-        <h1 className="titulo">Olá Atleta</h1>
-        <h3 className="sub-titulo">Sejá bem vindo ao WolfGO</h3>
+        <div className="boa-vinda">
+          <h1 className="titulo">Olá, Atleta</h1>
+          <h3 className="sub-titulo">Sejá bem vindo ao WolfGO</h3>
+        </div>
 
         <form onSubmit={handleLogin} className="form-login">
           <div className="input-group">
@@ -77,16 +81,19 @@ function Login() {
           </div>
 
           <div className="form-options">
-            <label>
-              <input type="checkbox" /> Lembre-me
+            <label className="checkbox-container">
+              <input type="checkbox" />
+              Lembre-me
             </label>
             <a href="#" className="link-senha">Esqueceu a senha?</a>
           </div>
 
           {erro && <p className="erro-msg">{erro}</p>}
 
-          <button type="button" className="btn btn-secondary">Cadastre-se</button>
-          <button type="submit" className="btn btn-primary">Login</button>
+          <div className='btn-acesso'>
+            <button type="button" className="btn btn-secondary">Cadastre-se</button>
+            <button type="submit" className="btn btn-primary">Login</button>
+          </div>
         </form>
       </div>
     </div>
