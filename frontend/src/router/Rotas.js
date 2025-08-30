@@ -15,7 +15,7 @@ function Rotas() {
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/treino" element={<Treino />} />
-          <Route path="/fixaTreino" element={<FixaTreino />} />
+          <Route path="/fixaTreino/:id" element={<FixaTreino />} />
         </Routes> 
       </BrowserRouter>
     </AuthProvider>

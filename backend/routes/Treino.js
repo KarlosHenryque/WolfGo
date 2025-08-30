@@ -2,100 +2,119 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
-let treinoSalvo = null;
-
-// Rota POST para receber treino do n8n
 router.post('/', async (req, res) => {
-  let treino = req.body;
+  let body = req.body;
 
-  if (!treino || typeof treino !== 'object') {
-    return res.status(400).json({ error: 'Treino inválido.' });
+  if (Array.isArray(body)) {
+    body = body[0];
   }
 
-  if (typeof treino.Treino === 'string') {
+  let treinoRaw = body.Treino || body.treino;
+
+  if (!treinoRaw || typeof treinoRaw !== 'string') {
+    return res.status(400).json({ error: 'Campo Treino inválido ou ausente.' });
+  }
+
+  const id_user = body.id_user || body.ID_User || null;
+  const id_formulario = body.id_formulario || body.ID_Formulario || null;
+
+  if (!id_user || !id_formulario) {
+    return res.status(400).json({ error: 'id_user ou id_formulario inválidos ou ausentes.' });
+  }
+
+  try {
+    const cleaned = treinoRaw.replace(/```json/, '').replace(/```/, '').trim();
+    const treino = JSON.parse(cleaned);
+
+    const client = await pool.connect();
+
     try {
-      const cleaned = treino.Treino
-        .replace(/```json/, '')
-        .replace(/```/, '')
-        .trim();
+      await client.query('BEGIN');
 
-      treino.Treino = JSON.parse(cleaned);
-    } catch (e) {
-      return res.status(400).json({ error: 'Formato JSON inválido no campo Treino.' });
-    }
-  } else if (typeof treino.Treino !== 'object') {
-    return res.status(400).json({ error: 'Campo Treino não é um objeto válido.' });
-  }
+      for (const diaTreino of treino) {
+        const insertTreinoText = `
+          INSERT INTO treino (id_formulario, dia, grupo_muscular)
+          VALUES ($1, $2, $3) RETURNING id
+        `;
+        const resTreino = await client.query(insertTreinoText, [
+          id_formulario,
+          diaTreino.dia,
+          diaTreino.grupoMuscular,
+        ]);
 
-  try {
-    const { formulario_usuario_id, treino_nome, descricao, data_inicio, data_fim } = treino.Treino;
+        const id_treino = resTreino.rows[0].id;
 
-    const query = `
-      INSERT INTO treinos_usuario (treino_nome, descricao, data_inicio, data_fim, formulario_usuario_id)
-      VALUES ($1, $2, $3, $4, $5)
-      RETURNING id;
-    `;
-    
-    const values = [
-      treino_nome, 
-      descricao, 
-      data_inicio, 
-      data_fim, 
-      formulario_usuario_id
-    ];
-
-    const result = await pool.query(query, values);
-    const treinoId = result.rows[0].id;
-
-    res.json({ message: 'Treino salvo com sucesso!', treinoId });
-  } catch (error) {
-    console.error('Erro ao salvar treino no banco:', error);
-    res.status(500).json({ error: 'Erro ao salvar treino no banco de dados.' });
-  }
-});
-
-// GET retorna o treino mais recente
-router.get('/', async (req, res) => {
-  const maxEsperar = 30000;
-  const intervalo = 1000;
-  const inicio = Date.now();
-
-  const esperarTreino = () => {
-    return new Promise((resolve, reject) => {
-      const checar = () => {
-        if (treinoSalvo) {
-          const treinoParaEnviar = treinoSalvo;
-          treinoSalvo = null;
-          return resolve(treinoParaEnviar);
+        for (const ex of diaTreino.exercicios) {
+          const insertExercicioText = `
+            INSERT INTO exercicio (id_treino, nome, series, repeticoes)
+            VALUES ($1, $2, $3, $4)
+          `;
+          await client.query(insertExercicioText, [
+            id_treino,
+            ex.nome,
+            ex.series,
+            ex.repeticoes.toString(),
+          ]);
         }
-
-        if (Date.now() - inicio >= maxEsperar) {
-          return resolve(null);
-        }
-
-        setTimeout(checar, intervalo);
-      };
-
-      try {
-        checar();
-      } catch (err) {
-        reject(err);
       }
-    });
-  };
 
-  try {
-    const treino = await esperarTreino();
+      await client.query('COMMIT');
+      client.release();
 
-    if (treino) {
-      res.json({ treino });
-    } else {
-      res.status(400).json({ error: 'Treino ainda não disponível.' });
+      treinoSalvo = treino;
+      idUserSalvo = id_user;
+      idFormularioSalvo = id_formulario;
+
+      return res.json({
+        message: 'Treino salvo no banco com sucesso',
+        id_user,
+        id_formulario,
+        treino,
+      });
+    } catch (error) {
+      await client.query('ROLLBACK');
+      client.release();
+      console.error('Erro na transação:', error);
+      return res.status(500).json({ error: 'Erro ao salvar treino no banco.' });
     }
-  } catch (error) {
-    console.error('Erro ao esperar treino:', error);
-    res.status(500).json({ error: 'Erro no servidor ao aguardar o treino.' });
+  } catch (e) {
+    console.error('Erro ao fazer parse do treino:', e);
+    return res.status(400).json({ error: 'Formato JSON inválido no campo Treino.' });
   }
 });
+
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const treinoQuery = `
+      SELECT * FROM treino WHERE id_formulario = $1;
+    `;
+    const treinoResult = await pool.query(treinoQuery, [id]);
+
+    if (treinoResult.rows.length === 0) {
+      return res.status(404).json({ message: "Treino não encontrado." });
+    }
+
+    const treinos = await Promise.all(
+      treinoResult.rows.map(async (treino) => {
+        const exercicioQuery = `
+          SELECT nome, series, repeticoes FROM exercicio WHERE id_treino = $1;
+        `;
+        const exercicioResult = await pool.query(exercicioQuery, [treino.id]);
+        return {
+          ...treino,
+          exercicios: exercicioResult.rows
+        };
+      })
+    );
+
+    res.json(treinos);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Erro ao buscar treino" });
+  }
+});
+
 
 module.exports = router;
