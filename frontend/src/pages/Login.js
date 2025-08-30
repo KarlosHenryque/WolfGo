@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../components/AuthProvider';
 import '../assets/css/Login.css';
 import Swal from 'sweetalert2';
 import img_corredor from '../assets/img/Corredor_login.png';
@@ -10,7 +9,6 @@ import { FaEnvelope, FaLock } from 'react-icons/fa';
 
 function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth();
 
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -30,6 +28,12 @@ function Login() {
 
       const dados = await resposta.json();
 
+      localStorage.setItem('usuarioId', dados.usuario.id);
+      localStorage.setItem('usuarioNome', dados.usuario.nome);
+      localStorage.setItem('usuarioEmail', dados.usuario.email);
+
+      console.log(dados.usuario.id);
+
       if (!resposta.ok) {
         Swal.fire({
           icon: 'error',
@@ -39,7 +43,6 @@ function Login() {
       return;
     }
 
-      login();
       localStorage.setItem('usuario', JSON.stringify(dados.usuario));
       navigate('/treino');
     } catch (error) {

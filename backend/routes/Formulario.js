@@ -1,38 +1,63 @@
 const express = require('express');
 const axios = require('axios');
+const pool = require('../db');
 const router = express.Router();
 
-let dadosFormularioUser = null;
-
-//Coletar dados do usuário e enviar para o n8n
+// Coletar dados do usuário, salvar no banco de dados e enviar para o n8n
 router.post('/formularioUser', async (req, res) => {
-    dadosFormularioUser = req.body;
+    const { nome, dataNascimento, objetivo, experiencia, diasTreino, duracao, algumaLesao, altura, peso, id_usuario } = req.body;
 
-    console.log('Dados Recebidos com sucesso', dadosFormularioUser);
+    if (!nome || !dataNascimento || !objetivo || !experiencia || !diasTreino || !duracao || !altura || !peso || !id_usuario) {
+        return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
+    }
 
     try {
-        const n8nWebhookUrl = 'http://localhost:5678/webhook/fomularioUser';
+        const [day, month, year] = dataNascimento.split('/');
+        const formattedDate = `${year}-${month}-${day}`;
 
-        await axios.post(n8nWebhookUrl, dadosFormularioUser);
+        const query = `
+            INSERT INTO formulario_usuario (nome, data_nascimento, objetivo, experiencia, dias_treino, duracao, alguma_lesao, altura, peso, id_usuario)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id;
+        `;
+        const result = await pool.query(query, [nome, formattedDate, objetivo, experiencia, diasTreino, duracao, algumaLesao || null, altura, peso, id_usuario]);
+        const savedUserId = result.rows[0].id;
+
+        console.log('Dados salvos no banco com sucesso!');
+
+        const n8nWebhookUrl = 'http://localhost:5678/webhook/fomularioUser';
+        await axios.post(n8nWebhookUrl, {
+            nome,
+            dataNascimento: formattedDate,
+            objetivo,
+            experiencia,
+            diasTreino,
+            duracao,
+            algumaLesao,
+            altura,
+            peso
+        });
 
         res.status(201).json({
-            message: 'Treino recebido e enviado para o n8n com sucesso!',
-            dados: dadosFormularioUser
+            message: 'Treino salvo no banco de dados e enviado para o n8n com sucesso!',
+            userId: savedUserId
         });
+
     } catch (error) {
-        console.error('Erro ao enviar para webhook n8n:', error.message);
-        res.status(500).json({ error: 'Erro ao enviar para webhook n8n.', detalhe: error.message });
+        console.error('Erro ao salvar no banco ou enviar para o n8n:', error);
+
+        res.status(500).json({
+            message: 'Erro ao salvar no banco de dados ou enviar para o n8n.',
+            detalhe: error.message
+        });
     }
 });
 
-//Verificar dados do usuário
+// Verificar dados do usuário
 router.get('/formularioUser', (req, res) => {
-
-   if(!dadosFormularioUser) {
-    return res.status(404).json({message: 'Nenhum dado encontrado' });
-   }
-
-   res.json(dadosFormularioUser);
+    if (!dadosFormularioUser) {
+        return res.status(404).json({ message: 'Nenhum dado encontrado' });
+    }
+    res.json(dadosFormularioUser);
 });
 
-module.exports = router
+module.exports = router;
