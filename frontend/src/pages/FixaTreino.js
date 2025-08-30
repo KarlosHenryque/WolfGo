@@ -3,6 +3,8 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'
 
+import Layout from "../components/Layout";
+
 function FixaTreino() {
     const [treino, setTreino] = useState(null);
     const [erro, setErro] = useState(null);
@@ -35,7 +37,7 @@ function FixaTreino() {
                         text: 'Tente novamente mais tarde',
                         confirmButtonText: 'OK'
                     }).then((result) => {
-                        navigate('/')
+                        navigate('/treino')
                     })
                 }
             } catch (error) {
@@ -50,31 +52,33 @@ function FixaTreino() {
     }
 
     return (
-        <div className="treino-container">
-            <h1>Seu Treino</h1>
-            {treino ? (
-                <div>
-                    {Array.isArray(treino) ? (
-                        treino.map((item, index) => (
-                            <div key={index} className="treino-item">
-                                <h3>{item.dia}</h3>
-                                <ul>
-                                    {item.exercicios.map((exercicio, i) => (
-                                        <li key={i}>
-                                            {exercicio.nome} - {exercicio.series}x{exercicio.repeticoes}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))
-                    ) : (
-                        <pre>{JSON.stringify(treino, null, 2)}</pre>
-                    )}
-                </div>
-            ) : (
-                <p>Nenhum treino disponível.</p>
-            )}
-        </div>
+        <Layout>
+            <div className="treino-container">
+                <h1>Seu Treino</h1>
+                {treino ? (
+                    <div>
+                        {Array.isArray(treino) ? (
+                            treino.map((item, index) => (
+                                <div key={index} className="treino-item">
+                                    <h3>{item.dia}</h3>
+                                    <ul>
+                                        {item.exercicios.map((exercicio, i) => (
+                                            <li key={i}>
+                                                {exercicio.nome} - {exercicio.series}x{exercicio.repeticoes}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ))
+                        ) : (
+                            <pre>{JSON.stringify(treino, null, 2)}</pre>
+                        )}
+                    </div>
+                ) : (
+                    <p>Nenhum treino disponível.</p>
+                )}
+            </div>
+        </Layout>
     );
 }
 

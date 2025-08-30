@@ -1,0 +1,127 @@
+:root {
+  --cor-primaria: #000000;
+  --cor-texto: #ffffff;
+  --cor-texto-destaque: #ffae00;
+  --cor-icons: #c0c0c0;
+  --cor-btn-secondary: #052bff;
+}
+
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+}
+
+/* Navbar superior */
+.top-navbar {
+  height: 65px;
+  background-color: var(--cor-primaria);
+  color: var(--cor-texto);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  position: relative;
+  border-radius: 0 0 10px 0;
+}
+
+.top-navbar-right span svg {
+  font-size: 28px; 
+}
+
+.menu-icon {
+  font-size: 30px;
+  cursor: pointer;
+  color: var(--cor-texto);
+}
+
+/* Ajuste da logo no topo */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 35px;
+  font-weight: bold;
+  color: var(--cor-texto-destaque);
+}
+
+.layout-lobo-img {
+  height: 100px;
+  margin-top: 10px;
+}
+
+/* Conteúdo principal: sidebar + conteúdo */
+.main-content {
+  display: flex;
+  flex: 1;
+  background-color: var(--cor-texto);
+  height: calc(100vh - 60px);
+}
+
+/* Sidebar lateral */
+.sidebar {
+  background-color: var(--cor-primaria);
+  color: var(--cor-texto);
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* largura expandida e recolhida */
+.sidebar.expanded {
+  width: 200px;
+}
+
+.sidebar.collapsed {
+  width: 80px;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-menu li {
+  margin: 30px 0 60px;
+}
+
+.sidebar-menu li a {
+  color: var(--cor-texto);
+  text-decoration: none;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 26px;
+  transition: background-color 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.sidebar-menu li a svg {
+  font-size: 30px;
+  transition: font-size 0.3s ease;
+}
+
+/* Oculta o texto dos links quando sidebar fechada */
+.sidebar.collapsed .link-text {
+  display: none;
+}
+
+.sidebar-menu li a:hover {
+  background-color: var(--cor-texto-destaque);
+  border-radius: 5px;
+}
+
+/* Área do conteúdo principal */
+.content-area {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background-color: white;
+}

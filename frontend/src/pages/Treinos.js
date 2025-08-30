@@ -2,6 +2,7 @@ import React from "react";
 import Swal from "sweetalert2";
 import { useNavigate } from 'react-router-dom';
 
+import Layout from "../components/Layout";
 import '../assets/css/Treinos.css'
 import '../assets/css/SwalFire.css'
 
@@ -74,9 +75,15 @@ function Treino() {
           return false;
         }
 
+         const id_usuario = localStorage.getItem('usuarioId');
+          if (!id_usuario) {
+            Swal.showValidationMessage('Usuário não autenticado. Por favor, faça login.');
+            return false;
+          }
+
         return {
           nome, dataNascimento, objetivo, experiencia,
-          diasTreino, duracao, algumaLesao, altura, peso
+          diasTreino, duracao, algumaLesao, altura, peso, id_usuario
         };
       }
     }).then((result) => {
@@ -110,14 +117,15 @@ function Treino() {
   }
 
   return (
-    <div className="container-treino">
 
+    <Layout>
+    <div className="container-treino">
       <div className="input-buscar-treino">
         <input type="text" placeholder="Buscar treino" />
         <button onClick={modalFormulario}>+</button>
       </div>
     </div>
-
+    </Layout>
   );
 }
 
