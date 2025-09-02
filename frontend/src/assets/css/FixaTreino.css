@@ -1,0 +1,105 @@
+:root {
+  --color-primary: #ffb700;
+  --color-primary-dark: #d18e00;
+  --color-text: #000000;
+  --color-bg-table-row: #fff;
+  --color-bg-table-row-hover: #fff6d1;
+  --color-shadow: rgba(0, 0, 0, 0.1);
+  --font-size-base: 16px;
+}
+
+.header-treino-container {
+  font-size: 32px;
+  display: flex;
+  flex-direction: row;
+  cursor: pointer;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.treino-container-voltar:hover {
+  transition: 500ms;
+  font-size: 35px;
+  color: var(--color-primary);
+}
+
+.treino-container-pdf {
+  font-size: 32px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.treino-container-pdf:hover {
+  font-size: 32px;
+  cursor: pointer;  
+  color: var(--color-primary-dark);
+}
+
+.tabela-treino {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  margin-bottom: 40px;
+  font-size: var(--font-size-base);
+  box-shadow: 0 4px 8px var(--color-shadow);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.tabela-treino caption {
+  caption-side: top;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--color-text);
+  text-align: center;
+}
+
+.tabela-treino th,
+.tabela-treino td {
+  padding: 12px 20px;
+}
+
+.tabela-treino th:nth-child(1),
+.tabela-treino td:nth-child(1) {
+  text-align: left;
+  width: 50%;
+  font-weight: 600; 
+}
+
+.tabela-treino th:nth-child(2),
+.tabela-treino td:nth-child(2),
+.tabela-treino th:nth-child(3),
+.tabela-treino td:nth-child(3) {
+  text-align: center;
+  width: 25%;
+  font-size: 25px;
+}
+
+.tabela-treino th {
+  background-color: var(--color-primary);
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 25px;
+}
+
+.tabela-treino tbody tr {
+  background-color: var(--color-bg-table-row);
+  box-shadow: 0 1px 3px var(--color-shadow);
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.tabela-treino tbody tr:hover {
+  background-color: var(--color-bg-table-row-hover);
+  cursor: pointer;
+}
+
+.tabela-treino td:first-child {
+  font-size: 25px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+

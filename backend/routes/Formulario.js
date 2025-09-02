@@ -11,7 +11,6 @@ router.post('/formularioUser', async (req, res) => {
   }
 
   try {
-    // Converter dataNascimento de DD/MM/AAAA para YYYY-MM-DD
     const [day, month, year] = dataNascimento.split('/');
     const formattedDate = `${year}-${month}-${day}`;
 

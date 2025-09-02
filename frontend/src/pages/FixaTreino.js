@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import { FaArrowCircleLeft, FaRegFilePdf } from "react-icons/fa";
 
 import Layout from "../components/Layout";
+import '../assets/css/FixaTreino.css'
 
 function FixaTreino() {
   const [treino, setTreino] = useState(null);
@@ -24,15 +26,17 @@ function FixaTreino() {
       allowOutsideClick: false,
       didOpen: () => {
         Swal.showLoading();
-      },
+      }
     });
 
-    const fetchTreino = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/treino/${id}`);
+    const fetchTreino = axios.get(`http://localhost:5000/api/treino/${id}`);
+    const delay = new Promise(resolve => setTimeout(resolve, 1000));
+
+    Promise.all([fetchTreino, delay])
+      .then(([response]) => {
         Swal.close();
 
-        if (response.data.length === 0) {
+        if (!response.data || response.data.length === 0) {
           Swal.fire({
             icon: "error",
             title: "Ops...",
@@ -45,13 +49,18 @@ function FixaTreino() {
         }
 
         setTreino(response.data);
-      } catch (error) {
+      }).catch(() => {
         Swal.close();
-        setErro("Erro ao buscar o treino.");
-      }
-    };
 
-    fetchTreino();
+        Swal.fire({
+          icon: "error",
+          title: "Treino ainda não criado",
+          text: "Tente novamente mais tarde.",
+          confirmButtonText: "OK"
+        }).then(() => {
+          navigate("/treino");
+        });
+      });
   }, [id, navigate]);
 
   if (erro) {
@@ -60,28 +69,46 @@ function FixaTreino() {
 
   return (
     <Layout>
+      <div className="header-treino-container">
+        <div className="treino-container-voltar" onClick={() => navigate('/treino')} aria-label="Voltar para tela de treinos" role="button" tabIndex={0}>
+          <FaArrowCircleLeft />
+        </div>
+
+        <div className="treino-container-pdf" aria-label="Gerar PDF do treino" role="button" tabIndex={0}>
+          <FaRegFilePdf />
+        </div>
+      </div>
+
       <div className="treino-container">
-        <h1>Seu Treino</h1>
         {treino ? (
           Array.isArray(treino) ? (
             treino.map((item, index) => (
               <div key={index} className="treino-item">
-                <h3>{item.dia}</h3>
-                <ul>
-                  {item.exercicios.map((exercicio, i) => (
-                    <li key={i}>
-                      {exercicio.nome} - {exercicio.series}x{exercicio.repeticoes}
-                    </li>
-                  ))}
-                </ul>
+                <table className="tabela-treino" aria-label={`Treino para ${item.dia} - ${item.grupo_muscular}`}>
+                  <caption>{item.dia} - {item.grupo_muscular}</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Exercício</th>
+                      <th scope="col">Séries</th>
+                      <th scope="col">Repetições</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {item.exercicios.map((exercicio, i) => (
+                      <tr key={i}>
+                        <td>{exercicio.nome}</td>
+                        <td>{exercicio.series}</td>
+                        <td>{exercicio.repeticoes}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             ))
           ) : (
             <pre>{JSON.stringify(treino, null, 2)}</pre>
           )
-        ) : (
-          <p>Nenhum treino disponível.</p>
-        )}
+        ) : null}
       </div>
     </Layout>
   );
