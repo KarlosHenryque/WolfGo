@@ -4,11 +4,14 @@ const router = express.Router();
 const pool = require('../db'); 
 
 router.post('/', async (req, res) => {
-    const { nome, email, senha } = req.body;
+    let { nome, email, senha } = req.body;
 
     if (!nome || !email || !senha) {
         return res.status(400).json({ messagem: 'Todos os campos são obrigatórios.' });
     }
+
+    nome = nome.toLowerCase();
+    email = email.toLowerCase();
 
     try {
         const resultado = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);

@@ -174,18 +174,10 @@ function Treino() {
             <div
               key={treino.id}
               className="linha-treino"
-              style={{
-                background: "black",
-                color: "white",
-                padding: "10px",
-                marginBottom: "5px",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
               onClick={() => navigate(`/FixaTreino/${treino.id}`)}
             >
               <span>{treino.nome}</span>
-              <span style={{ float: "right" }}>{treino.data}</span>
+              <span className="linha-treino-data">{treino.data}</span>
             </div>
           ))}
         </div>
