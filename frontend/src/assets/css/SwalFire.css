@@ -115,3 +115,11 @@
 .swal2-cancel:hover {
     background-color: #8f0000 !important;
 }
+
+/* Modal Formulario */
+.modal-formulario p:hover {
+    transition: 500ms;
+    color: #ffb700;
+    font-size: 25px;
+    cursor: pointer;
+}

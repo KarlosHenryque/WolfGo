@@ -6,6 +6,35 @@
   --cor-btn-secondary: #052bff;
 }
 
+/* container-register-voltar */
+.container-register {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 20px;
+  position: relative; 
+}
+
+/* Botão de voltar */
+.btn-back {
+  position: fixed;       
+  top: 20px;             
+  left: 20px;            
+  font-size: 32px;
+  background: none;
+  border: none;
+  color: var(--cor-texto-destaque);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.3s ease;
+  z-index: 1000;        
+}
+
+.btn-back:hover {
+  color: var(--cor-primaria);
+}
+
+
 /* Container */
 .container-login {
   display: flex;

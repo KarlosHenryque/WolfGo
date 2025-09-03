@@ -31,7 +31,7 @@ function Layout({ children }) {
       <div className="main-content">
         <aside className={`sidebar ${sidebarOpen ? 'expanded' : 'collapsed'}`}>
           <ul className="sidebar-menu">
-            <li><a href="#"><FaHome /><span className="link-text">Home</span></a></li>
+            <li><a href="/home"><FaHome /><span className="link-text">Home</span></a></li>
             <li><a href="/treino"><MdFitnessCenter /><span className="link-text">Treino</span></a></li>
             <li><a href="#"><TbRun /><span className="link-text">Corrida</span></a></li>
             <li><a href="#"><LuSalad /><span className="link-text">Nutrição</span></a></li>

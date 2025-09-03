@@ -44,7 +44,7 @@ function Login() {
     }
 
       localStorage.setItem('usuario', JSON.stringify(dados.usuario));
-      navigate('/treino');
+      navigate('/home');
     } catch (error) {
       Swal.fire({
         icon: 'error',

@@ -95,4 +95,28 @@ router.get('/usuario/:id_usuario', async (req, res) => {
   }
 });
 
+//Visualizar o formulario do usuario vinculado com treino
+router.get('/:id_formulario', async (req, res) => {
+    const { id_formulario } = req.params;
+
+    try {
+      const query = `
+        SELECT id, nome, data_nascimento, objetivo, experiencia, dias_treino, duracao, alguma_lesao, altura, peso, data_criacao
+        FROM formulario_usuario
+        WHERE id = $1      
+      `;
+
+      const result = await pool.query(query, [id_formulario]);
+
+      if(result.rows.length === 0) {
+        return res.status(404).json({ message: 'Formulário não encontrado' });
+      }
+
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error('Erro ao buscar formulário', error);
+      res.status(500).json({ message: 'Erro ao buscar formulário', detalhe: error.message });
+    }
+});
+
 module.exports = router;
