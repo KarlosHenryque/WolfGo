@@ -18,6 +18,11 @@
   margin-bottom: 20px;
 }
 
+.treino-container-actions {
+  display: flex;
+  gap: 10px;
+}
+
 .treino-container-voltar:hover {
   transition: 500ms;
   font-size: 35px;
@@ -31,6 +36,18 @@
 }
 
 .treino-container-pdf:hover {
+  font-size: 32px;
+  cursor: pointer;  
+  color: var(--color-primary-dark);
+}
+
+.treino-container-fixa {
+  font-size: 32px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.treino-container-fixa:hover {
   font-size: 32px;
   cursor: pointer;  
   color: var(--color-primary-dark);

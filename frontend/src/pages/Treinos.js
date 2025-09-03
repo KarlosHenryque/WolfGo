@@ -11,7 +11,6 @@ function Treino() {
   const navigate = useNavigate();
 
   const idUser = localStorage.getItem("usuarioId");
-  console.log("ID usuário:", idUser);
 
   useEffect(() => {
     if (!idUser) return;
