@@ -9,15 +9,16 @@ app.use(express.json());
 
 const Login = require('./routes/Login');
 const Register = require('./routes/Register');
-const ExerciciosApi = require('./routes/ExerciciosApi');
 const FormularioUser = require('./routes/Formulario');
 const TreinoIa = require('./routes/Treino');
+const ExerciciosApi = require('./routes/ExerciciosApi');
+
 
 app.use('/api/login', Login);
 app.use('/api/register', Register);
-app.use('/api/exercicios', ExerciciosApi);
 app.use('/api/formulario', FormularioUser);
 app.use('/api/treino', TreinoIa);
+app.use('/api/exercicios', ExerciciosApi);
 
 
 app.listen(PORT, () => {
