@@ -46,9 +46,9 @@ function Layout({ children }) {
         <aside className={`sidebar ${sidebarOpen ? 'expanded' : 'collapsed'}`}>
           <ul className="sidebar-menu">
             <li><a href="/home"><FaHome /><span className="link-text">Home</span></a></li>
-            <li><a href="/treino"><MdFitnessCenter /><span className="link-text">Treino</span></a></li>
             <li><a href="/exercicios"><GiWeightLiftingUp /><span className="link-text">Exercício</span></a></li>
-            <li><a href="#"><TbRun /><span className="link-text">Corrida</span></a></li>
+            <li><a href="/treino"><MdFitnessCenter /><span className="link-text">Treino</span></a></li>
+            <li><a href="/corrida"><TbRun /><span className="link-text">Corrida</span></a></li>
             <li><a href="#"><LuSalad /><span className="link-text">Nutrição</span></a></li>
             <li><a href="/"><IoMdExit /><span className="link-text">Sair</span></a></li>
           </ul>
