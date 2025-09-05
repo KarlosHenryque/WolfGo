@@ -8,6 +8,7 @@ import Home from '../pages/Home'
 import Treino from '../pages/Treinos';
 import FixaTreino from '../pages/FixaTreino';
 import Exercicios from '../pages/Exercicios';
+import Corrida from '../pages/Corrida';
 
 function Rotas() {
   return (
@@ -18,8 +19,9 @@ function Rotas() {
           <Route path="/register" element={<Register />} />
           <Route path="/home" element={<Home />} />
           <Route path="/treino" element={<Treino />} />
-          <Route path="/exercicios" element={<Exercicios />} />
           <Route path="/fixaTreino/:id" element={<FixaTreino />} />
+          <Route path="/exercicios" element={<Exercicios />} />
+          <Route path="/corrida" element={<Corrida />} />
         </Routes> 
       </BrowserRouter>
     </AuthProvider>

@@ -1,37 +1,22 @@
 import React from 'react';
 import Layout from '../components/Layout';
+import '../assets/css/Exercicios.css';
 
-import { FaMagnifyingGlass } from "react-icons/fa6";
+import { FaSearch } from 'react-icons/fa';
 
-function Exercicios() { 
-    return (
-        <Layout>
-        <div>
-            <h1 className='exercicio-treino'>Exercicios</h1>
+function Exercicios() {
+  return (
+    <Layout>
+        <div className="container-exercicios">
+            <h1 className='exercicio-titulo'>Exercícios</h1>
 
-            <div className='exercicio-input-buscar-treino'>
+            <div className='input-buscar-treino'>
                 <input placeholder='Buscar exercício' />
-                <button>< FaMagnifyingGlass /></button>
-            </div>
-
-            <div className='exercicio-btn-treino'>
-                <button>Ombro</button>
-                <button>Costa</button>
-                <button>Peito</button>
-            </div>
-
-            <div className='exercicio-cards-exercicios'>
-                <div className='card-exercicio'>
-
-                </div>
-
-                <div className='exercicio-card-exercicio'>
-
-                </div>
+                <button className='exercicio-lupa'>< FaSearch /></button>
             </div>
         </div>
-        </Layout>
-    )
+    </Layout>
+  );
 }
 
 export default Exercicios;
