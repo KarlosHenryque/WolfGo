@@ -1,20 +1,114 @@
 :root {
-  --cor-texto-titulo: #000000;
+  --cor-principal: #ffa500;
+  --cor-secundaria: #000;
+  --cor-texto-claro: #fff;
+  --cor-borda: #ddd;
+  --cor-sombra: rgba(0, 0, 0, 0.1);
 }
 
-
 .container-exercicios {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-family: Arial, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 .exercicio-titulo {
-  font-size: 3rem;
-  font-weight: 600;
-  color: var(--cor-texto-titulo);
-  margin: 0;
+  text-align: center;
+  font-size: 32px;
+  margin-bottom: 20px;
 }
 
+.input-buscar-treino {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.input-buscar-treino input {
+  width: 50%;
+  padding: 10px;
+  border: 2px solid var(--cor-principal);
+  border-radius: 8px 0 0 8px;
+  outline: none;
+  font-size: 16px;
+}
+
+.exercicio-lupa {
+  padding: 10px 20px;
+  background-color: var(--cor-principal);
+  border: none;
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+  color: var(--cor-texto-claro);
+  font-size: 16px;
+}
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  justify-items: center;
+}
+
+.card-exercicio {
+  background-color: var(--cor-texto-claro);
+  border: 1px solid var(--cor-borda);
+  border-radius: 10px;
+  padding: 15px;
+  width: 100%;
+  max-width: 250px;
+  text-align: center;
+  box-shadow: 0 2px 6px var(--cor-sombra);
+  transition: transform 0.2s ease;
+}
+
+.btn-selecionar-exercicios {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-selecionar-exercicios button {
+  background-color: var(--cor-principal);
+  padding: 20px;
+  font-size: 15px;
+  font-weight: bolder;
+  color: var(--cor-secundaria);
+  border: none;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.btn-selecionar-exercicios button:hover {
+  transform: translateY(-5px);
+}
+
+.card-exercicio:hover {
+  transform: translateY(-5px);
+}
+
+.card-exercicio img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.card-exercicio h3 {
+  font-size: 25px;
+}
+
+.card-exercicio strong {
+  color: var(--cor-principal);
+}
+
+.card-exercicio p {
+  background-color: var(--cor-secundaria);
+  color: var(--cor-texto-claro);
+  padding: 6px;
+  border-radius: 4px;
+  margin: 6px 0;
+  font-size: 14px;
+  text-align: left;
+}
