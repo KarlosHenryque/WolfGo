@@ -22,9 +22,9 @@ router.post('/:id_usuario', async (req, res) => {
   }
 
   try {
-    // Inserir dados de nutrição
+    // Inserir dados de dieta na tabela formulario_dieta
     const insertQuery = `
-      INSERT INTO nutricao (
+      INSERT INTO formulario_dieta (
         id_formulario, nivel_atividade, preferencias_alimentares, alergia, utiliza_suplemento, uso_medicacao, objetivo, frequencia_atividade, qualidade_sono
       ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
       RETURNING *;
@@ -41,7 +41,7 @@ router.post('/:id_usuario', async (req, res) => {
       qualidade_sono,
     ];
     const insertResult = await pool.query(insertQuery, values);
-    const nutricaoSalva = insertResult.rows[0];
+    const dietaSalva = insertResult.rows[0];  // variável renomeada
 
     // Buscar dados do formulário do usuário
     const formularioQuery = `
@@ -117,7 +117,7 @@ router.post('/:id_usuario', async (req, res) => {
         data_criacao: formulario.data_criacao,
         sexo: formulario.sexo,
       },
-      nutricao: nutricaoSalva,
+      dieta: dietaSalva,  // renomeado para dieta
       treinos: treinos
     };
 
