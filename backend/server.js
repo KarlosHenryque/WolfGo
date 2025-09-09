@@ -13,6 +13,8 @@ const FormularioUser = require('./routes/Formulario');
 const TreinoIa = require('./routes/Treino');
 const ExerciciosApi = require('./routes/ExerciciosApi');
 const Corrida = require('./routes/Corrida');
+const Nutricao = require('./routes/Nutricao');
+const Dieta = require('./routes/Dieta')
 
 
 app.use('/api/login', Login);
@@ -21,6 +23,8 @@ app.use('/api/formulario', FormularioUser);
 app.use('/api/treino', TreinoIa);
 app.use('/api/exercicios', ExerciciosApi);
 app.use('/api/corrida', Corrida);
+app.use('/api/nutricao', Nutricao);
+app.use('/api/dieta', Dieta);
 
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);

@@ -4,9 +4,12 @@ const pool = require('../db');
 const router = express.Router();
 
 router.post('/formularioUser', async (req, res) => {
-  const { nome, dataNascimento, objetivo, experiencia, diasTreino, duracao, algumaLesao, altura, peso, id_usuario } = req.body;
+  const { nome, dataNascimento, objetivo, experiencia, diasTreino, duracao, algumaLesao, altura, peso, id_usuario, sexo } = req.body;
 
-  if (!nome || !dataNascimento || !objetivo || !experiencia || !diasTreino || !duracao || !altura || !peso || !id_usuario) {
+  if (
+    !nome || !dataNascimento || !objetivo || !experiencia || !diasTreino || !duracao ||
+    !altura || !peso || !id_usuario || !sexo
+  ) {
     return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
   }
 
@@ -16,8 +19,8 @@ router.post('/formularioUser', async (req, res) => {
 
     const query = `
       INSERT INTO formulario_usuario 
-      (nome, data_nascimento, objetivo, experiencia, dias_treino, duracao, alguma_lesao, altura, peso, id_usuario)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      (nome, data_nascimento, objetivo, experiencia, dias_treino, duracao, alguma_lesao, altura, peso, id_usuario, sexo)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       RETURNING id;
     `;
 
@@ -32,6 +35,7 @@ router.post('/formularioUser', async (req, res) => {
       altura,
       peso,
       id_usuario,
+      sexo,
     ]);
 
     const savedUserId = result.rows[0].id;
@@ -39,7 +43,7 @@ router.post('/formularioUser', async (req, res) => {
     console.log('Dados salvos no banco com sucesso!');
 
     try {
-     await axios.post('http://localhost:5678/webhook/formularioUser', {
+      await axios.post('http://localhost:5678/webhook/formularioUser', {
         id_usuario,
         savedUserId,
         nome,
@@ -65,11 +69,10 @@ router.post('/formularioUser', async (req, res) => {
     console.error('Erro ao salvar no banco:', error);
     res.status(500).json({
       message: 'Erro ao salvar no banco de dados.',
-      detalhe: error.message,
+      detalhes: error.message,
     });
   }
 });
-
 
 // Verificar dados do usuário
 router.get('/usuario/:id_usuario', async (req, res) => {
@@ -91,32 +94,32 @@ router.get('/usuario/:id_usuario', async (req, res) => {
     res.json({ formularios: result.rows });
   } catch (error) {
     console.error('Erro ao buscar formulários:', error);
-    res.status(500).json({ message: 'Erro ao buscar formulários.', detalhe: error.message });
+    res.status(500).json({ message: 'Erro ao buscar formulários.', detalhes: error.message });
   }
 });
 
-//Visualizar o formulario do usuario vinculado com treino
+// Visualizar o formulário do usuário vinculado com treino
 router.get('/:id_formulario', async (req, res) => {
-    const { id_formulario } = req.params;
+  const { id_formulario } = req.params;
 
-    try {
-      const query = `
-        SELECT id, nome, data_nascimento, objetivo, experiencia, dias_treino, duracao, alguma_lesao, altura, peso, data_criacao
-        FROM formulario_usuario
-        WHERE id = $1      
-      `;
+  try {
+    const query = `
+      SELECT id, nome, data_nascimento, objetivo, experiencia, dias_treino, duracao, alguma_lesao, altura, peso, sexo, data_criacao
+      FROM formulario_usuario
+      WHERE id = $1      
+    `;
 
-      const result = await pool.query(query, [id_formulario]);
+    const result = await pool.query(query, [id_formulario]);
 
-      if(result.rows.length === 0) {
-        return res.status(404).json({ message: 'Formulário não encontrado' });
-      }
-
-      res.json(result.rows[0]);
-    } catch (error) {
-      console.error('Erro ao buscar formulário', error);
-      res.status(500).json({ message: 'Erro ao buscar formulário', detalhe: error.message });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Formulário não encontrado' });
     }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Erro ao buscar formulário', error);
+    res.status(500).json({ message: 'Erro ao buscar formulário', detalhes: error.message });
+  }
 });
 
 module.exports = router;

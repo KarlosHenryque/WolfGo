@@ -110,7 +110,7 @@ function Home() {
             <AiOutlineLeft />
           </button>
 
-          <div className="cards-container" ref={carouselRef}>
+          <div className="cards-container-home" ref={carouselRef}>
             {cards.map((card, index) => (
               <div
                 className="card"
