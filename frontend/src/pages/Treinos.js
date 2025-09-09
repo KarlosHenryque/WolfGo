@@ -63,6 +63,11 @@ function Treino() {
             <option value="6">6</option>
             <option value="7">7</option>
           </select>
+          <select id="sexo" class="input select-custom">
+            <option value="" disabled selected>Sexo</option>
+            <option value="F">Feminino</option>
+            <option value="M">Masculino</option>
+          </select>
           <input type="text" id="duracaoTreino" class="input" placeholder="Duração (minutos)" />
           <input type="text" id="algumaLesao" class="input" placeholder="Alguma Lesão" />
           <input type="text" id="altura" class="input" placeholder="Altura (m)" />
@@ -80,6 +85,7 @@ function Treino() {
         const objetivo = Swal.getPopup().querySelector("#objetivo").value;
         const experiencia = Swal.getPopup().querySelector("#experiencia").value;
         const diasTreino = Swal.getPopup().querySelector("#diasTreino").value;
+        const sexo = Swal.getPopup().querySelector("#sexo").value;
         const duracao = Swal.getPopup().querySelector("#duracaoTreino").value;
         const algumaLesao = Swal.getPopup().querySelector("#algumaLesao").value;
         const altura = Swal.getPopup().querySelector("#altura").value;
@@ -91,6 +97,7 @@ function Treino() {
           !objetivo ||
           !experiencia ||
           !diasTreino ||
+          !sexo ||
           !duracao ||
           !altura ||
           !peso
@@ -116,6 +123,7 @@ function Treino() {
           objetivo,
           experiencia,
           diasTreino,
+          sexo,
           duracao,
           algumaLesao,
           altura,
@@ -148,6 +156,7 @@ function Treino() {
                   nome: data.nome || result.value.nome,
                   data: new Date(data.data_criacao || Date.now()).toLocaleDateString('pt-BR'),  
                   objetivo: data.objetivo || result.value.objetivo,
+                  sexo: data.sexo || result.value.sexo,
                 },
               ]);
               Swal.close();
