@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 
 function Nutricao() {
   const [formularios, setFormularios] = useState([]);
+  const [dietas, setDietas] = useState([]);
   const idUser = localStorage.getItem("usuarioId");
 
   useEffect(() => {
@@ -18,6 +19,19 @@ function Nutricao() {
       })
       .catch((err) => {
         console.error("Erro ao buscar formulários:", err);
+      });
+  }, [idUser]);
+
+  useEffect(() => {
+    if (!idUser) return;
+
+    fetch(`http://localhost:5000/api/dieta/${idUser}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setDietas(data);
+      })
+      .catch((err) => {
+        console.error("Erro ao buscar dietas:", err);
       });
   }, [idUser]);
 
@@ -158,22 +172,35 @@ function Nutricao() {
     });
   };
 
-  return (
+    return (
     <Layout>
-      <div className="container-treino">
-        <div className="input-buscar-treino">
-          <input type="text" placeholder="Buscar treino" />
-          <button onClick={modalFormularioNutricao}>+</button>
-        </div>
+  <div className="container-treino">
+    <div className="input-buscar-treino">
+      <input type="text" placeholder="Buscar dieta" />
+      <button onClick={modalFormularioNutricao}>+</button>
+    </div>
 
-        <div className="lista-treinos">
-          <div>
-            <span></span>
-            <span className="linha-treino-data"></span>
+    <div className="lista-treinos">
+      {dietas.length === 0 ? (
+        <p>Nenhuma dieta encontrada.</p>
+      ) : (
+        dietas.map((dieta) => (
+          <div
+            key={dieta.id}
+            className="linha-treino"
+            onClick={() => console.log(`Dieta selecionada: ${dieta.id}`)}
+          >
+            <span>Dieta #{dieta.id}</span>
+            <span className="linha-treino-data">
+              {dieta.data_criacao ? new Date(dieta.data_criacao).toLocaleDateString('pt-BR') : ''}
+            </span>
           </div>
-        </div>
-      </div>
-    </Layout>
+        ))
+      )}
+    </div>
+  </div>
+</Layout>
+
   );
 }
 
