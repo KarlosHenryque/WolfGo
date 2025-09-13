@@ -59,7 +59,7 @@ router.post('/formularioUser', async (req, res) => {
     console.log('Dados salvos no banco com sucesso!');
 
     try {
-      await axios.post('http://localhost:5678/webhook-test/formularioUser', {
+      await axios.post('http://localhost:5678/webhook/formularioUser', {
         id_usuario,
         savedUserId,
         nomeTreino,
