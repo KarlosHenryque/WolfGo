@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import Swal from "sweetalert2";
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import { VscListFlat } from "react-icons/vsc";
-import { IoIosStar } from "react-icons/io";
 import { FaPlay, FaStop } from "react-icons/fa";
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';

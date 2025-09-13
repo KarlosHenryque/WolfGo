@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import Swal from "sweetalert2";
+import { useNavigate } from 'react-router-dom';
 
 function Nutricao() {
+  const navigate = useNavigate();
   const [formularios, setFormularios] = useState([]);
   const [dietas, setDietas] = useState([]);
   const idUser = localStorage.getItem("usuarioId");
@@ -172,6 +174,11 @@ function Nutricao() {
     });
   };
 
+
+  const abrirDetalhesDieta = (idDieta) => {
+    navigate(`/dieta/${idDieta}`);
+  }
+
     return (
     <Layout>
   <div className="container-treino">
@@ -188,7 +195,7 @@ function Nutricao() {
           <div
             key={dieta.id}
             className="linha-treino"
-            onClick={() => console.log(`Dieta selecionada: ${dieta.id}`)}
+            onClick={() => abrirDetalhesDieta(dieta.id)}
           >
             <span>Dieta #{dieta.id}</span>
             <span className="linha-treino-data">

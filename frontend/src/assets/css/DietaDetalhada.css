@@ -1,0 +1,116 @@
+:root {
+  --color-primary: #ffb700;
+  --color-primary-dark: #d18e00;
+  --color-text: #000000;
+  --color-bg-table-row: #fff;
+  --color-bg-table-row-hover: #fff6d1;
+  --color-shadow: rgba(0, 0, 0, 0.1);
+  --font-size-base: 16px;
+}
+
+.dieta-detalhada-container {
+  padding: 2rem;
+  margin-top: -20px ;
+}
+
+.dieta-header-icons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  font-size: 32px;
+  margin-bottom: 20px;
+}
+
+.dieta-header-title {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 32px;
+  font-weight: bold;
+  white-space: nowrap; /* Evita quebra de linha no título e ícones */
+}
+
+.titulo-dia {
+  text-align: center;
+}
+
+.dieta-icons-group {
+  display: flex;
+  gap: 15px;
+  align-items: center; /* Centraliza ícones verticalmente */
+}
+
+.icon-dieta,
+.icon-lista {
+  cursor: pointer;
+  transition: color 0.3s ease, font-size 0.3s ease;
+}
+
+.icon-dieta:hover,
+.icon-lista:hover {
+  color: var(--color-primary-dark);
+  font-size: 35px;
+}
+
+/* Títulos */
+.subtitulo-dia {
+  font-size: 25px;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: var(--color-text);
+}
+
+/* Tabela similar à tabela de treino */
+.tabela-refeicoes {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  margin-bottom: 40px;
+  font-size: var(--font-size-base);
+  box-shadow: 0 4px 8px var(--color-shadow);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.tabela-refeicoes th,
+.tabela-refeicoes td {
+  padding: 12px 20px;
+  vertical-align: top;
+}
+
+.tabela-refeicoes th {
+  background-color: var(--color-primary);
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 20px;
+}
+
+.tabela-refeicoes th:nth-child(1),
+.tabela-refeicoes td:nth-child(1) {
+  width: 30%;
+  font-weight: 600;
+  font-size: 18px;
+  text-align: left;
+}
+
+.tabela-refeicoes th:nth-child(2),
+.tabela-refeicoes td:nth-child(2) {
+  width: 70%;
+  text-align: left;
+  font-size: 16px;
+}
+
+.tabela-refeicoes tbody tr {
+  background-color: var(--color-bg-table-row);
+  box-shadow: 0 1px 3px var(--color-shadow);
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.tabela-refeicoes tbody tr:hover {
+  background-color: var(--color-bg-table-row-hover);
+  cursor: default;
+}

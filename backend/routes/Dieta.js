@@ -3,6 +3,7 @@ const router = express.Router();
 const pool = require('../db'); 
 
 router.post('/', async (req, res) => {
+  console.log(req.body); 
   const { id_usuario, id_formulario_usuario, id_formulario_dieta, dieta: dietaRaw } = req.body;
 
   if (!id_usuario || !id_formulario_usuario || !id_formulario_dieta) {
@@ -91,6 +92,55 @@ router.get('/:id_usuario', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erro ao buscar dietas' });
+  }
+});
+
+
+router.get('/detalhada/:id_dieta', async (req, res) => {
+  const { id_dieta } = req.params;
+
+  try {
+    const client = await pool.connect();
+
+    const dietaQuery = await client.query(
+      'SELECT * FROM dieta WHERE id = $1',
+      [id_dieta]
+    );
+    const dieta = dietaQuery.rows[0];
+
+    const diasQuery = await client.query(
+      'SELECT * FROM dieta_dia WHERE id_dieta = $1',
+      [id_dieta]
+    );
+    const dias = diasQuery.rows;
+
+    for (const dia of dias) {
+      const refeicoesQuery = await client.query(
+        'SELECT * FROM dieta_refeicao WHERE id_dia = $1',
+        [dia.id]
+      );
+      const refeicoes = refeicoesQuery.rows;
+
+      for (const refeicao of refeicoes) {
+        const itensQuery = await client.query(
+          'SELECT * FROM dieta_item WHERE id_refeicao = $1',
+          [refeicao.id]
+        );
+        refeicao.itens = itensQuery.rows.map((i) => i.item);
+      }
+
+      dia.refeicoes = refeicoes;
+    }
+
+    client.release();
+
+    res.json({
+      dieta,
+      dias,
+    });
+  } catch (error) {
+    console.error('Erro ao buscar dieta detalhada:', error);
+    res.status(500).json({ error: 'Erro ao buscar dieta detalhada' });
   }
 });
 

@@ -1,9 +1,23 @@
 :root {
-  --cor-primaria: #000000;
+  --cor-primaria: #131313;
   --cor-texto: #ffffff;
   --cor-texto-destaque: #ffae00;
   --cor-icons: #c0c0c0;
 }
+
+
+#filtroStatusTreino {
+  margin: 15px auto;
+  padding: 8px 12px;
+  font-size: 16px;
+  font-weight: 500px;
+  border-radius: 8px;
+  border: 1px solid var(--cor-texto-destaque);
+  background-color: var(--cor-primaria);
+  color: var(--cor-texto);
+  cursor: pointer;
+}
+
 
 .input-buscar-treino {
     display: flex;
