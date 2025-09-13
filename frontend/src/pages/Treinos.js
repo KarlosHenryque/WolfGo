@@ -3,11 +3,12 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
 import Layout from "../components/Layout";
+import { ModalFormularioTreino } from "../components/ModalFormularioTreino";
 import "../assets/css/Treinos.css";
-import "../assets/css/SwalFire.css";
 
 function Treino() {
   const [treinos, setTreinos] = useState([]);
+  const [filtroStatus, setFiltroStatus] = useState("ativo"); 
   const navigate = useNavigate();
 
   const idUser = localStorage.getItem("usuarioId");
@@ -21,66 +22,49 @@ function Treino() {
         return res.json();
       })
       .then((data) => {
-          if (Array.isArray(data.formularios)) {
-            const treinosDoUsuario = data.formularios.map((formulario) => ({
-              id: formulario.id,
-              nome: formulario.nome || "Treino",
-              data: new Date(formulario.data_criacao).toLocaleDateString('pt-BR'),
-              objetivo: formulario.objetivo || "",
-            }));
-            setTreinos(treinosDoUsuario);
-          } else {
-            setTreinos([]);
-          }
-        })
-        .catch((err) => {
+        if (Array.isArray(data.formularios)) {
+          const treinosDoUsuario = data.formularios.map((formulario) => ({
+            id: formulario.id,
+            nome: formulario.nomeTreino || "Treino",
+            data: new Date(formulario.data_criacao).toLocaleDateString('pt-BR'),
+            objetivo: formulario.objetivo || "",
+            status: formulario.status, 
+            sexo: formulario.sexo || "",
+          }));
+          setTreinos(treinosDoUsuario);
+        } else {
+          setTreinos([]);
+        }
+      })
+      .catch((err) => {
         console.error("Erro ao carregar treinos:", err);
         setTreinos([]);
       });
   }, [idUser]);
 
+  const handleFiltroChange = (e) => {
+    setFiltroStatus(e.target.value);
+  };
+
+  const treinosFiltrados = treinos.filter((treino) => {
+    if (filtroStatus === "ativo") return treino.status === true;
+    if (filtroStatus === "desativado") return treino.status === false;
+    return true; 
+  });
+
   const modalFormulario = () => {
     Swal.fire({
-      title: "Formulário",
-      html: `
-        <div class="modal-formulario-user">
-          <input type="text" id="nomeTreino" class="input" placeholder="Nome do treino" />
-          <input type="text" id="dataNascimento" class="input" placeholder="DD/MM/AAAA" maxlength="10" />
-          <input type="text" id="objetivo" class="input" placeholder="Objetivo" />
-          <select id="experiencia" class="input select-custom">
-            <option value="" disabled selected>Selecione o seu nível</option>
-            <option value="iniciante">Iniciante</option>
-            <option value="intermediario">Intermediário</option>
-            <option value="avancado">Avançado</option>
-          </select>
-          <select id="diasTreino" class="input select-custom">
-            <option value="" disabled selected>Selecione a quantidade de dias</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-          </select>
-          <select id="sexo" class="input select-custom">
-            <option value="" disabled selected>Sexo</option>
-            <option value="F">Feminino</option>
-            <option value="M">Masculino</option>
-          </select>
-          <input type="text" id="duracaoTreino" class="input" placeholder="Duração (minutos)" />
-          <input type="text" id="algumaLesao" class="input" placeholder="Alguma Lesão" />
-          <input type="text" id="altura" class="input" placeholder="Altura (m)" />
-          <input type="text" id="peso" class="input" placeholder="Peso (kg)" />
-        </div>
-      `,
+      title: "Formulário Treino",
+      html: ModalFormularioTreino(),
       focusConfirm: false,
       showCancelButton: true,
       confirmButtonText: "Salvar",
+      confirmButtonColor: "#0067A3",
       cancelButtonText: "Cancelar",
+      cancelButtonColor: "#ff0000ff",
       reverseButtons: true,
       preConfirm: () => {
-        const nome = Swal.getPopup().querySelector("#nomeTreino").value;
+        const nomeTreino = Swal.getPopup().querySelector("#nomeTreino").value;
         const dataNascimento = Swal.getPopup().querySelector("#dataNascimento").value;
         const objetivo = Swal.getPopup().querySelector("#objetivo").value;
         const experiencia = Swal.getPopup().querySelector("#experiencia").value;
@@ -92,7 +76,7 @@ function Treino() {
         const peso = Swal.getPopup().querySelector("#peso").value;
 
         if (
-          !nome ||
+          !nomeTreino ||
           !dataNascimento ||
           !objetivo ||
           !experiencia ||
@@ -118,7 +102,7 @@ function Treino() {
         }
 
         return {
-          nome,
+          nomeTreino,
           dataNascimento,
           objetivo,
           experiencia,
@@ -133,7 +117,7 @@ function Treino() {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-      fetch("http://localhost:5000/api/formulario/formularioUser", {
+        fetch("http://localhost:5000/api/formulario/formularioUser", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -153,10 +137,11 @@ function Treino() {
                 ...oldTreinos,
                 {
                   id: data.id || Date.now(),
-                  nome: data.nome || result.value.nome,
-                  data: new Date(data.data_criacao || Date.now()).toLocaleDateString('pt-BR'),  
+                  nome: data.nomeTreino || result.value.nomeTreino,
+                  data: new Date(data.data_criacao || Date.now()).toLocaleDateString('pt-BR'),
                   objetivo: data.objetivo || result.value.objetivo,
                   sexo: data.sexo || result.value.sexo,
+                  status: true, 
                 },
               ]);
               Swal.close();
@@ -172,13 +157,24 @@ function Treino() {
   return (
     <Layout>
       <div className="container-treino">
+        <select
+          id="filtroStatusTreino"
+          value={filtroStatus}
+          onChange={handleFiltroChange}
+          className="select-custom"
+        >
+          <option className="filtroStatusTreinoOptions" value="todos">Todos</option>
+          <option className="filtroStatusTreinoOptions" value="ativo">Ativo</option>
+          <option className="filtroStatusTreinoOptions" value="desativado">Desativado</option>
+        </select>
+
         <div className="input-buscar-treino">
           <input type="text" placeholder="Buscar treino" />
           <button onClick={modalFormulario}>+</button>
         </div>
 
         <div className="lista-treinos">
-          {treinos.map((treino) => (
+          {treinosFiltrados.map((treino) => (
             <div
               key={treino.id}
               className="linha-treino"

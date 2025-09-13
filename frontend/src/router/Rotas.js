@@ -10,6 +10,7 @@ import FixaTreino from '../pages/FixaTreino';
 import Exercicios from '../pages/Exercicios';
 import Corrida from '../pages/Corrida';
 import Nutricao from '../pages/Nutricao';
+import DietaDetalhada from '../pages/DietaDetalhada';
 
 function Rotas() {
   return (
@@ -24,6 +25,7 @@ function Rotas() {
           <Route path="/exercicios" element={<Exercicios />} />
           <Route path="/corrida" element={<Corrida />} />
           <Route path="/nutricao" element={<Nutricao />} />
+          <Route path="/dieta/:id" element={<DietaDetalhada />} />
         </Routes> 
       </BrowserRouter>
     </AuthProvider>

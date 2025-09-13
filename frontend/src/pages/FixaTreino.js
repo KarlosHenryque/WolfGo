@@ -4,10 +4,15 @@ import axios from "axios";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { useNavigate, useParams } from "react-router-dom";
-import { FaArrowCircleLeft, FaRegFilePdf, FaClipboardList  } from "react-icons/fa";
+import {
+  FaArrowCircleLeft,
+  FaRegFilePdf,
+  FaClipboardList,
+  FaTrashAlt,
+} from "react-icons/fa";
 
 import Layout from "../components/Layout";
-import '../assets/css/FixaTreino.css'
+import "../assets/css/FixaTreino.css";
 
 function FixaTreino() {
   const [treino, setTreino] = useState(null);
@@ -26,13 +31,11 @@ function FixaTreino() {
       width: "900px",
       padding: "3em",
       allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      }
+      didOpen: () => Swal.showLoading(),
     });
 
     const fetchTreino = axios.get(`http://localhost:5000/api/treino/${id}`);
-    const delay = new Promise(resolve => setTimeout(resolve, 1000));
+    const delay = new Promise((resolve) => setTimeout(resolve, 1000));
 
     Promise.all([fetchTreino, delay])
       .then(([response]) => {
@@ -44,33 +47,53 @@ function FixaTreino() {
             title: "Ops...",
             text: "Treino não encontrado.",
             confirmButtonText: "OK",
-          }).then(() => {
-            navigate("/treino");
-          });
+          }).then(() => navigate("/treino"));
           return;
         }
 
         setTreino(response.data);
-      }).catch(() => {
+      })
+      .catch(() => {
         Swal.close();
-
         Swal.fire({
           icon: "error",
           title: "Treino ainda não criado",
           text: "Tente novamente mais tarde.",
-          confirmButtonText: "OK"
-        }).then(() => {
-          navigate("/treino");
-        });
+          confirmButtonText: "OK",
+        }).then(() => navigate("/treino"));
       });
   }, [id, navigate]);
 
-  if (erro) {
-    return <div className="erro">{erro}</div>;
-  }
+  if (erro) return <div className="erro">{erro}</div>;
+
+  const confirmarDesativacao = () => {
+    Swal.fire({
+      title: "Tem certeza?",
+      text: "Deseja mesmo desativar o formulário?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sim, desativar",
+      cancelButtonText: "Cancelar",
+    }).then(async (result) => {
+      if (!result.isConfirmed) return;
+
+      try {
+        const response = await axios.put(`http://localhost:5000/api/treino/deletar-completo/${id}`);
+        if (response.status === 200) {
+          Swal.fire("Desativado!", "O formulário e o treino foram desativados com sucesso.", "success").then(() => {
+            navigate("/treino"); 
+          });
+        } else {
+          Swal.fire("Erro", "Tente novamente mais tarde", "error");
+        }
+      } catch (error) {
+        Swal.fire("Erro", "Tente novamente mais tarde", "error");
+      }
+    });
+  };
 
   const gerarPDF = async () => {
-  const doc = new jsPDF();
+    const doc = new jsPDF();
     let y = 20;
 
     doc.setFontSize(18);
@@ -147,18 +170,19 @@ function FixaTreino() {
     doc.save("treino.pdf");
   };
 
-
   const abrirModalFormulario = async () => {
     try {
       const res = await axios.get(`http://localhost:5000/api/formulario/${id}`);
       const form = res.data;
 
       Swal.fire({
-        title: 'Formulário do treino',
+        title: "Formulário do treino",
         html: `
           <div class="modal-formulario" style="text-align: center">
             <p><strong>Nome:</strong> ${form.nome}</p>
-            <p><strong>Data de Nascimento:</strong> ${new Date(form.data_nascimento).toLocaleDateString('pt-BR')}</p>
+            <p><strong>Data de Nascimento:</strong> ${new Date(
+              form.data_nascimento
+            ).toLocaleDateString("pt-BR")}</p>
             <p><strong>Objetivo:</strong> ${form.objetivo}</p>
             <p><strong>Experiência:</strong> ${form.experiencia}</p>
             <p><strong>Dias de Treino:</strong> ${form.dias_treino}</p>
@@ -168,18 +192,18 @@ function FixaTreino() {
             <p><strong>Peso:</strong> ${form.peso} kg</p>
           </div>
         `,
-        width: '400px',
-        confirmButtonText: 'Fechar',
-        confirmButtonColor: '#ffb700',
+        width: "400px",
+        confirmButtonText: "Fechar",
+        confirmButtonColor: "#ffb700",
         customClass: {
-          popup: 'swal2-border-radius'
-        }
+          popup: "swal2-border-radius",
+        },
       });
-    } catch (error) {
+    } catch {
       Swal.fire({
-        icon: 'error',
-        title: 'Erro',
-        text: 'Não foi possível carregar os dados do formulário.'
+        icon: "error",
+        title: "Erro",
+        text: "Não foi possível carregar os dados do formulário.",
       });
     }
   };
@@ -187,51 +211,80 @@ function FixaTreino() {
   return (
     <Layout>
       <div className="header-treino-container">
-        <div className="treino-container-voltar" onClick={() => navigate('/treino')} aria-label="Voltar para tela de treinos" role="button" tabIndex={0}>
+        <div
+          className="treino-container-voltar"
+          onClick={() => navigate("/treino")}
+          aria-label="Voltar para tela de treinos"
+          role="button"
+          tabIndex={0}
+        >
           <FaArrowCircleLeft />
         </div>
 
-      <div className="treino-container-actions">
-          <div className="treino-container-pdf" aria-label="Gerar PDF do treino" role="button" tabIndex={0} onClick={ gerarPDF } >
+        <div className="treino-container-actions">
+          <div
+            className="treino-container-pdf"
+            aria-label="Gerar PDF do treino"
+            role="button"
+            tabIndex={0}
+            onClick={gerarPDF}
+          >
             <FaRegFilePdf />
           </div>
 
-          <div className="treino-container-fixa" aria-label="Gerar PDF do treino"  role="button" tabIndex={0} onClick={ abrirModalFormulario }>
-            <FaClipboardList  />
+          <div
+            className="treino-container-fixa"
+            aria-label="Ver formulário"
+            role="button"
+            tabIndex={0}
+            onClick={abrirModalFormulario}
+          >
+            <FaClipboardList />
+          </div>
+
+          <div
+            className="treino-container-lixeira"
+            aria-label="Desativar treino"
+            role="button"
+            tabIndex={0}
+            onClick={confirmarDesativacao}
+          >
+            <FaTrashAlt />
           </div>
         </div>
       </div>
 
       <div className="treino-container">
-        {treino ? (
-          Array.isArray(treino) ? (
-            treino.map((item, index) => (
-              <div key={index} className="treino-item">
-                <table className="tabela-treino" aria-label={`Treino para ${item.dia} - ${item.grupo_muscular}`}>
-                  <caption>{item.dia} - {item.grupo_muscular}</caption>
-                  <thead>
-                    <tr>
-                      <th scope="col">Exercício</th>
-                      <th scope="col">Séries</th>
-                      <th scope="col">Repetições</th>
+        {treino &&
+          Array.isArray(treino) &&
+          treino.map((item, index) => (
+            <div key={index} className="treino-item">
+              <table
+                className="tabela-treino"
+                aria-label={`Treino para ${item.dia} - ${item.grupo_muscular}`}
+              >
+                <caption>
+                  {item.dia} - {item.grupo_muscular}
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Exercício</th>
+                    <th>Séries</th>
+                    <th>Repetições</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {item.exercicios.map((exercicio, i) => (
+                    <tr key={i}>
+                      <td>{exercicio.nome}</td>
+                      <td>{exercicio.series}</td>
+                      <td>{exercicio.repeticoes}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {item.exercicios.map((exercicio, i) => (
-                      <tr key={i}>
-                        <td>{exercicio.nome}</td>
-                        <td>{exercicio.series}</td>
-                        <td>{exercicio.repeticoes}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ))
-          ) : (
-            <pre>{JSON.stringify(treino, null, 2)}</pre>
-          )
-        ) : null}
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ))}
       </div>
     </Layout>
   );

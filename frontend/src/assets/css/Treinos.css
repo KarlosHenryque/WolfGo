@@ -1,75 +1,102 @@
 :root {
-  --cor-primaria: #000000;
+  --cor-primaria: #131313;
   --cor-texto: #ffffff;
   --cor-texto-destaque: #ffae00;
   --cor-icons: #c0c0c0;
 }
 
+#filtroStatusTreino {
+  margin: 15px auto;
+  padding: 8px 12px;
+  font-size: 16px;
+  font-weight: 500px;
+  width: 200px;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--cor-primaria);
+  color: var(--cor-texto);
+  cursor: pointer;
+}
+
+#filtroStatusTreino:hover,
+#filtroStatusTreino:focus {
+  border: none;
+  outline: none;
+}
+
+.filtroStatusTreinoOptions {
+  background-color: var(--cor-texto);
+  color: var(--cor-primaria);
+}
+
+.filtroStatusTreinoOptions:hover {
+  background-color: var(--cor-primaria);
+  color: var(--cor-texto);
+}
+
 .input-buscar-treino {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: auto 0;
-    height: 10vh;
-    color: var(--cor-texto);
-    font-family: 'Arial', sans-serif;
-    max-width: 100%;
-    padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto 0;
+  height: 10vh;
+  color: var(--cor-texto);
+  font-family: 'Arial', sans-serif;
+  max-width: 100%;
+  padding: 0.625rem 0.625rem; 
 }
 
 .input-buscar-treino input {
-    padding: 12px;
-    width: 600px;
-    max-width: 100%;
-    border-radius: 10px 0 0 10px;
-    border: 1px solid var(--cor-texto-destaque);
-    color: var(--cor-texto);
-    font-size: 16px;
-    box-sizing: border-box;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 0.75rem 1rem; 
+  width: 100%;
+  max-width: 40rem; 
+  border-radius: 0.625rem 0 0 0.625rem; 
+  border: 1px solid var(--cor-texto-destaque);
+  color: var(--cor-texto);
+  font-size: 1rem; 
+  box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: transparent;
 }
 
 .input-buscar-treino input:focus {
-    border: 1px solid var(--cor-texto-destaque);
-    padding: 12px;
-    outline: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border-color: var(--cor-texto-destaque);
+  outline: none;
+  box-shadow: 0 0 8px var(--cor-texto-destaque);
 }
 
-.input-buscar-treino input:hover {
-    border: 1px solid var(--cor-texto-destaque);
-    background-color: var(--cor-texto-destaque);
-    color: var(--cor-texto);
-    cursor: pointer;
+.input-buscar-treino input:hover:not(:focus) {
+  border-color: var(--cor-texto-destaque);
+  background-color: #f5f5f5; 
+  cursor: text;
+  color: var(--cor-texto);
 }
 
 .input-buscar-treino button {
-    width: 120px;
-    border-radius: 0 10px 10px 0;
-    background-color: var(--cor-texto-destaque);
-    border: 1px solid var(--cor-texto-destaque);
-    color: var(--cor-texto);
-    font-size: 18px;
-    padding: 11px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 7.5rem; 
+  border-radius: 0 0.625rem 0.625rem 0; 
+  background-color: var(--cor-texto-destaque);
+  border: 1px solid var(--cor-texto-destaque);
+  color: var(--cor-texto);
+  font-size: 1.125rem; 
+  padding: 0.625rem; 
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, padding 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .input-buscar-treino button:focus {
-    border: 1px solid var(--cor-texto-destaque);
-    outline: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  outline: none;
+  box-shadow: 0 0 8px var(--cor-texto-destaque);
 }
 
 .input-buscar-treino button:hover {
-    background-color: var(--cor-texto-destaque);
-    border: 1px solid var(--cor-texto-destaque);
-    color: var(--cor-texto);
-    padding: 14px;
+  padding: 0.75rem; 
 }
-
 
 .linha-treino {
     width: 80%;

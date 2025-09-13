@@ -4,13 +4,29 @@ const pool = require('../db');
 const router = express.Router();
 
 router.post('/formularioUser', async (req, res) => {
-  const { nome, dataNascimento, objetivo, experiencia, diasTreino, duracao, algumaLesao, altura, peso, id_usuario, sexo } = req.body;
+  const {
+    nomeTreino,
+    dataNascimento,
+    objetivo,
+    experiencia,
+    diasTreino,
+    duracao,
+    algumaLesao,
+    altura,
+    peso,
+    id_usuario,
+    sexo
+  } = req.body;
 
   if (
-    !nome || !dataNascimento || !objetivo || !experiencia || !diasTreino || !duracao ||
-    !altura || !peso || !id_usuario || !sexo
+    !nomeTreino || !dataNascimento || !objetivo || !experiencia || !diasTreino ||
+    !duracao || !altura || !peso || !id_usuario || !sexo
   ) {
     return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
+  }
+
+  if (isNaN(parseFloat(altura)) || isNaN(parseFloat(peso))) {
+    return res.status(400).json({ message: 'Altura e peso devem ser numéricos.' });
   }
 
   try {
@@ -18,14 +34,14 @@ router.post('/formularioUser', async (req, res) => {
     const formattedDate = `${year}-${month}-${day}`;
 
     const query = `
-      INSERT INTO formulario_usuario 
-      (nome, data_nascimento, objetivo, experiencia, dias_treino, duracao, alguma_lesao, altura, peso, id_usuario, sexo)
+      INSERT INTO formulario_treino 
+      (nome_treino, data_nascimento, objetivo, experiencia, dias_treino, duracao, alguma_lesao, altura, peso, id_usuario, sexo)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-      RETURNING id;
+      RETURNING id, data_criacao;
     `;
 
     const result = await pool.query(query, [
-      nome,
+      nomeTreino,
       formattedDate,
       objetivo,
       experiencia,
@@ -38,7 +54,7 @@ router.post('/formularioUser', async (req, res) => {
       sexo,
     ]);
 
-    const savedUserId = result.rows[0].id;
+    const { id: savedUserId, data_criacao } = result.rows[0];
 
     console.log('Dados salvos no banco com sucesso!');
 
@@ -46,7 +62,7 @@ router.post('/formularioUser', async (req, res) => {
       await axios.post('http://localhost:5678/webhook/formularioUser', {
         id_usuario,
         savedUserId,
-        nome,
+        nomeTreino,
         dataNascimento: formattedDate,
         objetivo,
         experiencia,
@@ -55,6 +71,7 @@ router.post('/formularioUser', async (req, res) => {
         algumaLesao,
         altura,
         peso,
+        sexo,
       });
       console.log('Dados enviados para o n8n com sucesso!');
     } catch (err) {
@@ -62,8 +79,12 @@ router.post('/formularioUser', async (req, res) => {
     }
 
     res.status(201).json({
-      message: 'Treino salvo no banco de dados com sucesso! (envio para n8n pode ter falhado)',
-      userId: savedUserId,
+      message: 'Treino salvo no banco de dados com sucesso!',
+      id: savedUserId,
+      data_criacao,
+      nomeTreino,
+      objetivo,
+      sexo,
     });
   } catch (error) {
     console.error('Erro ao salvar no banco:', error);
@@ -74,14 +95,13 @@ router.post('/formularioUser', async (req, res) => {
   }
 });
 
-// Verificar dados do usuário
 router.get('/usuario/:id_usuario', async (req, res) => {
   const { id_usuario } = req.params;
 
   try {
     const query = `
-      SELECT id, nome, data_nascimento, objetivo, experiencia, dias_treino, duracao, alguma_lesao, altura, peso, data_criacao
-      FROM formulario_usuario 
+      SELECT id, nome_treino AS "nomeTreino", data_nascimento, objetivo, experiencia, dias_treino, duracao, alguma_lesao, altura, peso, sexo, status, data_criacao
+      FROM formulario_treino 
       WHERE id_usuario = $1
       ORDER BY id DESC;
     `;
@@ -98,14 +118,14 @@ router.get('/usuario/:id_usuario', async (req, res) => {
   }
 });
 
-// Visualizar o formulário do usuário vinculado com treino
+
 router.get('/:id_formulario', async (req, res) => {
   const { id_formulario } = req.params;
 
   try {
     const query = `
-      SELECT id, nome, data_nascimento, objetivo, experiencia, dias_treino, duracao, alguma_lesao, altura, peso, sexo, data_criacao
-      FROM formulario_usuario
+      SELECT id, nome_treino AS "nomeTreino", data_nascimento, objetivo, experiencia, dias_treino, duracao, alguma_lesao, altura, peso, sexo, data_criacao
+      FROM formulario_treino
       WHERE id = $1      
     `;
 

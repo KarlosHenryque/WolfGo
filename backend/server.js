@@ -9,7 +9,7 @@ app.use(express.json());
 
 const Login = require('./routes/Login');
 const Register = require('./routes/Register');
-const FormularioUser = require('./routes/Formulario');
+const FormularioUser = require('./routes/FormularioTreino');
 const TreinoIa = require('./routes/Treino');
 const ExerciciosApi = require('./routes/ExerciciosApi');
 const Corrida = require('./routes/Corrida');
