@@ -16,10 +16,10 @@ function haversineDistance(coord1, coord2) {
   return R * c;
 }
 
-function calcularDistanciaTotal(pontos) {
+function calcularDistanciaTotal(rota) {
   let distanciaTotal = 0;
-  for (let i = 1; i < pontos.length; i++) {
-    distanciaTotal += haversineDistance(pontos[i - 1], pontos[i]);
+  for (let i = 1; i < rota.length; i++) {
+    distanciaTotal += haversineDistance(rota[i - 1], rota[i]);
   }
   return distanciaTotal;
 }
@@ -44,7 +44,7 @@ router.post('/', async (req, res) => {
     const distancia = calcularDistanciaTotal(rota);
 
     const query = `
-      INSERT INTO rotas (create_data, pontos, distancia_km, id_usuario)
+      INSERT INTO percurso (data_criacao, rota, distancia_km, id_usuario)
       VALUES (NOW(), $1, $2, $3)
       RETURNING *;
     `;
@@ -67,7 +67,7 @@ router.get('/:id_usuario', async (req, res) => {
 
   try {
     const result = await pool.query(
-      'SELECT create_data, distancia_km FROM rotas WHERE id_usuario = $1 ORDER BY create_data DESC',
+      'SELECT data_criacao, distancia_km, rota FROM percurso WHERE id_usuario = $1 ORDER BY data_criacao DESC',
       [id_usuario]
     );
 
