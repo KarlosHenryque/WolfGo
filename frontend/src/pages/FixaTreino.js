@@ -9,13 +9,14 @@ import {
   FaRegFilePdf,
   FaClipboardList,
   FaTrashAlt,
+  FaRegCheckCircle
 } from "react-icons/fa";
 
 import Layout from "../components/Layout";
 import "../assets/css/FixaTreino.css";
 
 function FixaTreino() {
-  const [treino, setTreino] = useState(null);
+  const [treino, setTreino] = useState([]);
   const [erro, setErro] = useState(null);
   const navigate = useNavigate();
   const { id } = useParams();
@@ -41,7 +42,7 @@ function FixaTreino() {
       .then(([response]) => {
         Swal.close();
 
-        if (!response.data || response.data.length === 0) {
+        if (!response.data || !response.data.treinos || response.data.treinos.length === 0) {
           Swal.fire({
             icon: "error",
             title: "Ops...",
@@ -51,7 +52,7 @@ function FixaTreino() {
           return;
         }
 
-        setTreino(response.data);
+        setTreino(response.data.treinos);
       })
       .catch(() => {
         Swal.close();
@@ -66,27 +67,60 @@ function FixaTreino() {
 
   if (erro) return <div className="erro">{erro}</div>;
 
+  const confirmarAtivacao = () => {
+    Swal.fire({
+      title: "Ativar Treino?",
+      text: "Deseja mesmo reativar esse treino?",
+      icon: "question",
+      reverseButtons: true,
+      showCancelButton: true,
+      confirmButtonText: "Ativar",
+      confirmButtonColor: "#0067A3",
+      cancelButtonText: "Cancelar",
+      cancelButtonColor: "#ff0000ff",
+    }).then(async (result) => {
+      if (!result.isConfirmed) return;
+
+      try {
+        const response = await axios.put(`http://localhost:5000/api/treino/ativar/${id}`);
+        if (response.status === 200) {
+          Swal.fire("Ativado!", "O treino foi reativado com sucesso.", "success");
+          setTreino((prev) =>
+            prev.map(t => ({ ...t, ativo: true }))
+          );
+        } else {
+          Swal.fire("Erro", "Tente novamente mais tarde", "error");
+        }
+      } catch {
+        Swal.fire("Erro", "Tente novamente mais tarde", "error");
+      }
+    });
+  };
+
   const confirmarDesativacao = () => {
     Swal.fire({
       title: "Tem certeza?",
       text: "Deseja mesmo desativar o formulário?",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sim, desativar",
+      reverseButtons: true,
       cancelButtonText: "Cancelar",
+      cancelButtonColor: "#ff0000ff",
+      confirmButtonText: "Desativar",
+      confirmButtonColor: "#0067A3",
     }).then(async (result) => {
       if (!result.isConfirmed) return;
 
       try {
-        const response = await axios.put(`http://localhost:5000/api/treino/deletar-completo/${id}`);
+        const response = await axios.put(`http://localhost:5000/api/treino/deletar/${id}`);
         if (response.status === 200) {
           Swal.fire("Desativado!", "O formulário e o treino foram desativados com sucesso.", "success").then(() => {
-            navigate("/treino"); 
+            navigate("/treino");
           });
         } else {
           Swal.fire("Erro", "Tente novamente mais tarde", "error");
         }
-      } catch (error) {
+      } catch {
         Swal.fire("Erro", "Tente novamente mais tarde", "error");
       }
     });
@@ -116,7 +150,7 @@ function FixaTreino() {
       console.error("Erro ao buscar formulário:", err);
     }
 
-    if (treino && Array.isArray(treino)) {
+    if (treino && treino.length > 0) {
       treino.forEach((item) => {
         if (y > 230) {
           doc.addPage();
@@ -208,12 +242,22 @@ function FixaTreino() {
     }
   };
 
+  const handleKeyDown = (event, fn) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      fn();
+    }
+  };
+
+  const ativo = treino.length > 0 ? (treino[0].ativo === true || treino[0].ativo === "true") : false;
+
   return (
     <Layout>
       <div className="header-treino-container">
         <div
           className="treino-container-voltar"
           onClick={() => navigate("/treino")}
+          onKeyDown={(e) => handleKeyDown(e, () => navigate("/treino"))}
           aria-label="Voltar para tela de treinos"
           role="button"
           tabIndex={0}
@@ -224,67 +268,71 @@ function FixaTreino() {
         <div className="treino-container-actions">
           <div
             className="treino-container-pdf"
+            onClick={gerarPDF}
+            onKeyDown={(e) => handleKeyDown(e, gerarPDF)}
             aria-label="Gerar PDF do treino"
             role="button"
             tabIndex={0}
-            onClick={gerarPDF}
           >
             <FaRegFilePdf />
           </div>
 
           <div
             className="treino-container-fixa"
+            onClick={abrirModalFormulario}
+            onKeyDown={(e) => handleKeyDown(e, abrirModalFormulario)}
             aria-label="Ver formulário"
             role="button"
             tabIndex={0}
-            onClick={abrirModalFormulario}
           >
             <FaClipboardList />
           </div>
 
-          <div
-            className="treino-container-lixeira"
-            aria-label="Desativar treino"
-            role="button"
-            tabIndex={0}
-            onClick={confirmarDesativacao}
-          >
-            <FaTrashAlt />
+           <div
+              className="treino-container-lixeira"
+              onClick={ativo ? confirmarDesativacao : confirmarAtivacao}
+              onKeyDown={(e) =>
+                handleKeyDown(e, ativo ? confirmarDesativacao : confirmarAtivacao)
+              }
+              aria-label={ativo ? "Desativar treino" : "Ativar Treino"}
+              role="button"
+              tabIndex={0}
+              title={ativo ? "Desativar treino" : "Ativar Treino"}
+            >
+              {ativo ? <FaTrashAlt /> : <FaRegCheckCircle />}
+            </div>
           </div>
-        </div>
       </div>
 
       <div className="treino-container">
-        {treino &&
-          Array.isArray(treino) &&
-          treino.map((item, index) => (
-            <div key={index} className="treino-item">
-              <table
-                className="tabela-treino"
-                aria-label={`Treino para ${item.dia} - ${item.grupo_muscular}`}
-              >
-                <caption>
-                  {item.dia} - {item.grupo_muscular}
-                </caption>
-                <thead>
-                  <tr>
-                    <th>Exercício</th>
-                    <th>Séries</th>
-                    <th>Repetições</th>
+        {treino.length > 0 && treino.map((item, index) => (
+          <div key={index} className="treino-item">
+            <table
+              className="tabela-treino"
+              aria-label={`Treino para ${item.dia} - ${item.grupo_muscular}`}
+            >
+              <caption>
+                {item.dia} - {item.grupo_muscular}
+              </caption>
+              <thead>
+                <tr>
+                  <th>Exercício</th>
+                  <th>Séries</th>
+                  <th>Repetições</th>
+                </tr>
+              </thead>
+              <tbody>
+                {item.exercicios.map((exercicio, i) => (
+                  <tr key={i}>
+                    <td>{exercicio.nome}</td>
+                    <td>{exercicio.series}</td>
+                    <td>{exercicio.repeticoes}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {item.exercicios.map((exercicio, i) => (
-                    <tr key={i}>
-                      <td>{exercicio.nome}</td>
-                      <td>{exercicio.series}</td>
-                      <td>{exercicio.repeticoes}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ))}
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ))}
       </div>
     </Layout>
   );

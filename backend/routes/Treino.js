@@ -19,7 +19,7 @@ router.post('/', async (req, res) => {
   }
 
   try {
-    const cleaned = treinoRaw.replace(/```json/, '').replace(/```/, '').trim();
+    const cleaned = treinoRaw.replace(/```json/g, '').replace(/```/g, '').trim();
     const treino = JSON.parse(cleaned);
     const client = await pool.connect();
 
@@ -27,6 +27,10 @@ router.post('/', async (req, res) => {
       await client.query('BEGIN');
 
       for (const diaTreino of treino) {
+        if (!diaTreino.dia || !diaTreino.grupo_muscular || !Array.isArray(diaTreino.exercicios)) {
+          throw new Error('Formato do treino inválido.');
+        }
+
         const insertTreinoText = `
           INSERT INTO treino (id_formulario, dia, grupo_muscular)
           VALUES ($1, $2, $3) RETURNING id
@@ -34,22 +38,24 @@ router.post('/', async (req, res) => {
         const resTreino = await client.query(insertTreinoText, [
           id_formulario,
           diaTreino.dia,
-          diaTreino.grupoMuscular,
+          diaTreino.grupo_muscular,
         ]);
 
         const id_treino = resTreino.rows[0].id;
 
         for (const ex of diaTreino.exercicios) {
+          if (!ex.nome || !ex.series || !ex.repeticoes) {
+            throw new Error('Exercício com dados incompletos.');
+          }
           await client.query(
             `INSERT INTO exercicio (id_treino, nome, series, repeticoes)
              VALUES ($1, $2, $3, $4)`,
-            [id_treino, ex.nome, ex.series, ex.repeticoes.toString()]
+            [id_treino, ex.nome, ex.series, ex.repeticoes]
           );
         }
       }
 
       await client.query('COMMIT');
-      client.release();
 
       return res.json({
         message: 'Treino salvo no banco com sucesso',
@@ -59,9 +65,10 @@ router.post('/', async (req, res) => {
       });
     } catch (error) {
       await client.query('ROLLBACK');
-      client.release();
       console.error('Erro na transação:', error);
       return res.status(500).json({ error: 'Erro ao salvar treino no banco.' });
+    } finally {
+      client.release();
     }
   } catch (e) {
     console.error('Erro ao fazer parse do treino:', e);
@@ -69,19 +76,24 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Buscar treino
+// Buscar treino com status do formulário
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
     const treinoQuery = `
-      SELECT * FROM treino WHERE id_formulario = $1;
+      SELECT t.id, t.id_formulario, t.dia, t.grupo_muscular, f.status as ativo
+      FROM treino t
+      JOIN formulario_treino f ON t.id_formulario = f.id
+      WHERE t.id_formulario = $1;
     `;
     const treinoResult = await pool.query(treinoQuery, [id]);
 
     if (treinoResult.rows.length === 0) {
       return res.status(404).json({ message: "Treino não encontrado." });
     }
+
+    const ativo = treinoResult.rows[0].ativo;
 
     const treinos = await Promise.all(
       treinoResult.rows.map(async (treino) => {
@@ -90,58 +102,92 @@ router.get('/:id', async (req, res) => {
         `;
         const exercicioResult = await pool.query(exercicioQuery, [treino.id]);
         return {
-          ...treino,
+          id: treino.id,
+          id_formulario: treino.id_formulario,
+          dia: treino.dia,
+          grupo_muscular: treino.grupo_muscular,
           exercicios: exercicioResult.rows,
+          ativo: treino.ativo,
         };
       })
     );
 
-    res.json(treinos);
+    res.json({ treinos, ativo });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Erro ao buscar treino" });
   }
 });
 
-// Desativar treino
-router.put('/deletar-completo/:id_formulario', async (req, res) => {
+// Desativar treino (marca status = false)
+router.put('/deletar/:id_formulario', async (req, res) => {
   const { id_formulario } = req.params;
 
+  const client = await pool.connect();
   try {
-    const client = await pool.connect();
-    try {
-      await client.query('BEGIN');
+    await client.query('BEGIN');
 
-      // Atualiza status do formulário para false
-      const updateFormularioText = `
-        UPDATE formulario_treino
-        SET status = false
-        WHERE id = $1
-        RETURNING *;
-      `;
-      const resFormulario = await client.query(updateFormularioText, [id_formulario]);
+    const updateFormularioText = `
+      UPDATE formulario_treino
+      SET status = false
+      WHERE id = $1
+      RETURNING *;
+    `;
+    const resFormulario = await client.query(updateFormularioText, [id_formulario]);
 
-      if (resFormulario.rowCount === 0) {
-        await client.query('ROLLBACK');
-        return res.status(404).json({ message: 'Formulário não encontrado.' });
-      }
-
-      await client.query('COMMIT');
-      client.release();
-
-      return res.json({
-        message: 'Formulário e treinos desativados com sucesso.',
-        formulario: resFormulario.rows[0],
-      });
-    } catch (error) {
+    if (resFormulario.rowCount === 0) {
       await client.query('ROLLBACK');
-      client.release();
-      console.error('Erro na transação:', error);
-      return res.status(500).json({ error: 'Erro ao desativar formulário e treinos.' });
+      return res.status(404).json({ message: 'Formulário não encontrado.' });
     }
+
+    await client.query('COMMIT');
+
+    return res.json({
+      message: 'Formulário e treinos desativados com sucesso.',
+      formulario: resFormulario.rows[0],
+    });
   } catch (error) {
-    console.error('Erro ao conectar no banco:', error);
-    return res.status(500).json({ error: 'Erro interno do servidor.' });
+    await client.query('ROLLBACK');
+    console.error('Erro na transação:', error);
+    return res.status(500).json({ error: 'Erro ao desativar formulário e treinos.' });
+  } finally {
+    client.release();
+  }
+});
+
+// Ativar treino (marca status = true)
+router.put('/ativar/:id_formulario', async (req, res) => {
+  const { id_formulario } = req.params;
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const updateFormularioText = `
+      UPDATE formulario_treino
+      SET status = true
+      WHERE id = $1
+      RETURNING *;
+    `;
+    const resFormulario = await client.query(updateFormularioText, [id_formulario]);
+
+    if (resFormulario.rowCount === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ message: 'Formulário não encontrado.' });
+    }
+
+    await client.query('COMMIT');
+
+    return res.json({
+      message: 'Formulário ativado com sucesso.',
+      formulario: resFormulario.rows[0],
+    });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Erro na transação:', error);
+    return res.status(500).json({ error: 'Erro ao ativar formulário.' });
+  } finally {
+    client.release();
   }
 });
 
