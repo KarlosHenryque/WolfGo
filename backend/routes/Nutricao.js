@@ -25,8 +25,8 @@ router.post('/:id_usuario', async (req, res) => {
     // Inserir dados de dieta na tabela formulario_dieta
     const insertQuery = `
       INSERT INTO formulario_dieta (
-        id_formulario, nivel_atividade, preferencias_alimentares, alergia, utiliza_suplemento, uso_medicacao, objetivo, frequencia_atividade, qualidade_sono
-      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+        id_formulario, nivel_atividade, preferencias_alimentares, alergia, utiliza_suplemento, uso_medicacao, objetivo, frequencia_atividade, qualidade_sono, id_usuario
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9, $10 )
       RETURNING *;
     `;
     const values = [
@@ -39,9 +39,9 @@ router.post('/:id_usuario', async (req, res) => {
       objetivo,
       frequencia_atividade,
       qualidade_sono,
+      id_usuario,
     ];
     const insertResult = await pool.query(insertQuery, values);
-    const dietaSalva = insertResult.rows[0];  // variável renomeada
 
     // Buscar dados do formulário do usuário
     const formularioQuery = `
@@ -59,7 +59,6 @@ router.post('/:id_usuario', async (req, res) => {
     }
     const formulario = formularioResult.rows[0];
 
-    // Buscar treinos e exercícios relacionados ao formulário
     const treinoQuery = `
       SELECT
         t.id AS treino_id,
@@ -77,7 +76,6 @@ router.post('/:id_usuario', async (req, res) => {
     const treinoResult = await pool.query(treinoQuery, [id_formulario]);
     const rows = treinoResult.rows;
 
-    // Agrupar treinos com exercícios
     const treinos = [];
     rows.forEach(row => {
       let treino = treinos.find(t => t.treino_id === row.treino_id);
@@ -117,11 +115,9 @@ router.post('/:id_usuario', async (req, res) => {
         data_criacao: formulario.data_criacao,
         sexo: formulario.sexo,
       },
-      dieta: dietaSalva,  // renomeado para dieta
       treinos: treinos
     };
 
-    // Enviar para webhook
     const webhookURL = 'http://localhost:5678/webhook-test/dieta';
     try {
       await axios.post(webhookURL, dadosParaWebhook);

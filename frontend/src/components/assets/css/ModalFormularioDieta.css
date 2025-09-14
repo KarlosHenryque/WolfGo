@@ -1,0 +1,22 @@
+
+.modal-formulario-user {
+  display: flex;
+  flex-direction: column; 
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.select-custom {
+  appearance: none; 
+  background-color: #fff;
+  cursor: pointer;
+}

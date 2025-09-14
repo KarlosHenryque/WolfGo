@@ -45,3 +45,9 @@
 .select-custom option {
   color: #000;
 }
+
+/*ModalCorrida*/
+.listaCorrida tr:hover {
+  color: #ffae00;
+  cursor: pointer;
+}
