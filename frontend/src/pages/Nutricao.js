@@ -41,7 +41,7 @@ function Nutricao() {
 
     Swal.fire({
       title: "Formulário Nutricional",
-      html: ModalFormularioDieta(opcoesTreino),
+      html: ModalFormularioDieta(opcoesTreino), 
       focusConfirm: false,
       showCancelButton: true,
       reverseButtons: true,
@@ -51,6 +51,7 @@ function Nutricao() {
       cancelButtonColor: "#ff0000ff",
       preConfirm: () => {
         const idFormulario = document.getElementById("idFormulario").value;
+        const nomeDieta = document.getElementById("nomeDieta").value.trim();
         const nivelAtividade = document.getElementById("nivelAtividade").value;
         const preferenciasAlimentares = document.getElementById("preferenciasAlimentares").value;
         const alergia = document.getElementById("alergia").value.trim();
@@ -62,6 +63,7 @@ function Nutricao() {
 
         if (
           !idFormulario ||
+          !nomeDieta ||
           !nivelAtividade ||
           !preferenciasAlimentares ||
           !utilizaSuplemento ||
@@ -75,6 +77,7 @@ function Nutricao() {
 
         return {
           id_formulario: parseInt(idFormulario, 10),
+          nome: nomeDieta,
           nivel_atividade: nivelAtividade,
           preferencias_alimentares: preferenciasAlimentares,
           alergia: alergia || null,
