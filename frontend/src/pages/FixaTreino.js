@@ -114,7 +114,7 @@ function FixaTreino() {
       try {
         const response = await axios.put(`http://localhost:5000/api/treino/deletar/${id}`);
         if (response.status === 200) {
-          Swal.fire("Desativado!", "O formulário e o treino foram desativados com sucesso.", "success").then(() => {
+          Swal.fire("Desativado!", "O treino foi desativados com sucesso.", "success").then(() => {
             navigate("/treino");
           });
         } else {

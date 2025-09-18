@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../components/Layout";
+import "../assets/css/Treinos.css";
 import Swal from "sweetalert2";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { ModalFormularioDieta } from "../components/ModalFormularioDieta";
 
 function Nutricao() {
   const navigate = useNavigate();
   const [formularios, setFormularios] = useState([]);
+  const [dietas, setDietas] = useState([]);
+  const [filtroStatus, setFiltroStatus] = useState("ativo"); // <-- só muda aqui
   const idUser = localStorage.getItem("usuarioId");
 
   useEffect(() => {
@@ -21,6 +24,17 @@ function Nutricao() {
       })
       .catch((err) => {
         console.error("Erro ao buscar formulários:", err);
+      });
+
+    fetch(`http://localhost:5000/api/dieta/usuario/${idUser}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data.dietas)) {
+          setDietas(data.dietas);
+        }
+      })
+      .catch((err) => {
+        console.error("Erro ao buscar dietas:", err);
       });
   }, [idUser]);
 
@@ -41,7 +55,7 @@ function Nutricao() {
 
     Swal.fire({
       title: "Formulário Nutricional",
-      html: ModalFormularioDieta(opcoesTreino), 
+      html: ModalFormularioDieta(opcoesTreino),
       focusConfirm: false,
       showCancelButton: true,
       reverseButtons: true,
@@ -108,16 +122,53 @@ function Nutricao() {
     });
   };
 
+  const handleFiltroChange = (event) => {
+    setFiltroStatus(event.target.value);
+  };
+
+  const dietasFiltradas = dietas.filter((dieta) => {
+    if (filtroStatus === "todos") return true;
+    if (filtroStatus === "ativo") return dieta.status === true;       
+    if (filtroStatus === "desativado") return dieta.status === false; 
+    return true;
+  });
+
   return (
     <Layout>
       <div className="container-treino">
+        <select
+          id="filtroStatusDieta"
+          value={filtroStatus}
+          onChange={handleFiltroChange}
+          className="filtroStatus"
+        >
+          <option value="todos">Todos</option>
+          <option value="ativo">Ativo</option>
+          <option value="desativado">Desativado</option>
+        </select>
+
         <div className="input-buscar-treino">
           <input type="text" placeholder="Buscar dieta" disabled />
           <button onClick={modalFormularioNutricao}>+</button>
         </div>
 
-        <div className="lista-treinos">
-          <p>Lista de dietas removida, pois tabela foi excluída.</p>
+        <div className="treino-container-lixeira">
+          {dietasFiltradas.length === 0 ? (
+            <p>Nenhuma dieta cadastrada.</p>
+          ) : (
+            dietasFiltradas.map((dieta) => (
+              <div
+                key={dieta.id_formulario_dieta}
+                className="linha-treino"
+                onClick={() => navigate(`/dieta/${dieta.id_formulario_dieta}`)}
+              >
+                <span>{dieta.nome_dieta}</span>
+                <span className="linha-treino-data">
+                  {new Date(dieta.data_criacao).toLocaleDateString("pt-BR")}
+                </span>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </Layout>
