@@ -25,9 +25,9 @@ router.post('/:id_usuario', async (req, res) => {
   try {
     const insertQuery = `
       INSERT INTO formulario_dieta (
-        id_formulario, nome_dieta, nivel_atividade, preferencias_alimentares, alergia, 
+        id_formulario_treino, nome_dieta, nivel_atividade, preferencias_alimentares, alergia, 
         utiliza_suplemento, uso_medicacao, objetivo, frequencia_atividade, 
-        qualidade_sono, id_usuario
+        qualidade_sono, id_usuario,
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       RETURNING *;
     `;

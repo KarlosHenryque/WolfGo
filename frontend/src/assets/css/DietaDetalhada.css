@@ -28,41 +28,38 @@
   gap: 15px;
   font-size: 32px;
   font-weight: bold;
-  white-space: nowrap; /* Evita quebra de linha no título e ícones */
+  white-space: nowrap; 
 }
 
-.titulo-dia {
-  text-align: center;
-}
 
 .dieta-icons-group {
   display: flex;
   gap: 15px;
-  align-items: center; /* Centraliza ícones verticalmente */
+  align-items: center;
 }
 
 .icon-dieta,
-.icon-lista {
+.icon-lista,
+.icon-lixeira{
   cursor: pointer;
   transition: color 0.3s ease, font-size 0.3s ease;
 }
 
 .icon-dieta:hover,
-.icon-lista:hover {
+.icon-lista:hover,
+.icon-lixeira {
   color: var(--color-primary-dark);
   font-size: 35px;
 }
 
-/* Títulos */
 .subtitulo-dia {
-  font-size: 25px;
+  font-size: 35px;
   font-weight: 600;
   margin-bottom: 1rem;
   text-align: center;
   color: var(--color-text);
 }
 
-/* Tabela similar à tabela de treino */
 .tabela-refeicoes {
   width: 100%;
   border-collapse: separate;

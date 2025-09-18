@@ -161,7 +161,7 @@ function Treino() {
           id="filtroStatusTreino"
           value={filtroStatus}
           onChange={handleFiltroChange}
-          className="select-custom"
+          className="filtroStatus"
         >
           <option className="filtroStatusTreinoOptions" value="todos">Todos</option>
           <option className="filtroStatusTreinoOptions" value="ativo">Ativo</option>

@@ -5,7 +5,7 @@
   --cor-icons: #c0c0c0;
 }
 
-#filtroStatusTreino {
+.filtroStatus {
   margin: 15px auto;
   padding: 8px 12px;
   font-size: 16px;
@@ -18,8 +18,8 @@
   cursor: pointer;
 }
 
-#filtroStatusTreino:hover,
-#filtroStatusTreino:focus {
+.filtroStatus:hover,
+.filtroStatus:focus {
   border: none;
   outline: none;
 }
