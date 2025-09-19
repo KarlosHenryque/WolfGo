@@ -8,48 +8,61 @@
   --font-size-base: 16px;
 }
 
-.dieta-detalhada-container {
-  padding: 2rem;
-  margin-top: -20px ;
-}
-
-.dieta-header-icons {
+.header-dieta-container {
+  font-size: 32px;
   display: flex;
+  flex-direction: row;
+  cursor: pointer;
   justify-content: space-between;
   align-items: center;
-  margin: 0;
-  font-size: 32px;
   margin-bottom: 20px;
 }
 
-.dieta-header-title {
+.dieta-container-actions {
   display: flex;
-  align-items: center;
-  gap: 15px;
-  font-size: 32px;
-  font-weight: bold;
-  white-space: nowrap; 
+  gap: 10px;
 }
 
-
-.dieta-icons-group {
-  display: flex;
-  gap: 15px;
-  align-items: center;
-}
-
-.icon-dieta,
-.icon-lista,
-.icon-lixeira{
-  cursor: pointer;
-  transition: color 0.3s ease, font-size 0.3s ease;
-}
-
-.icon-dieta:hover,
-.icon-lista:hover,
-.icon-lixeira {
-  color: var(--color-primary-dark);
+.dieta-container-voltar:hover {
+  transition: 500ms;
   font-size: 35px;
+  color: var(--color-primary);
+}
+
+.dieta-container-pdf {
+  font-size: 32px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.dieta-container-pdf:hover {
+  font-size: 32px;
+  cursor: pointer;  
+  color: var(--color-primary-dark);
+}
+
+.dieta-container-fixa {
+  font-size: 32px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.dieta-container-fixa:hover {
+  font-size: 32px;
+  cursor: pointer;  
+  color: var(--color-primary-dark);
+}
+
+.dieta-container-lixeira {
+  font-size: 32px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.dieta-container-lixeira:hover {
+  font-size: 32px;
+  cursor: pointer;  
+  color: var(--color-primary-dark);
 }
 
 .subtitulo-dia {

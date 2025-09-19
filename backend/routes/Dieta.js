@@ -19,94 +19,94 @@ function extrairQuantidadeEAlimento(texto) {
 
 // Inserção no banco de dados
 router.post('/', async (req, res) => {
-  const { id_usuario, id_formulario_treino, id_formulario_dieta, dieta: dietaRaw } = req.body;
+    const { id_usuario, id_formulario_treino, id_formulario_dieta, dieta: dietaRaw } = req.body;
 
-  if (!id_usuario || !id_formulario_treino || !id_formulario_dieta) {
-    return res.status(400).json({ error: 'id_usuario, id_formulario_treino e id_formulario_dieta são obrigatórios.' });
-  }
-
-  if (!dietaRaw || typeof dietaRaw !== 'string') {
-    return res.status(400).json({ error: 'Campo dieta inválido ou ausente.' });
-  }
-
-  const client = await pool.connect();
-
-  try {
-    const cleaned = dietaRaw.replace(/```(?:json)?/gi, '').trim();
-    const dieta = JSON.parse(cleaned);
-
-    if (!Array.isArray(dieta)) {
-      return res.status(400).json({ error: 'Formato da dieta inválido. Deve ser um array.' });
+    if (!id_usuario || !id_formulario_treino || !id_formulario_dieta) {
+      return res.status(400).json({ error: 'id_usuario, id_formulario_treino e id_formulario_dieta são obrigatórios.' });
     }
 
-    await client.query('BEGIN');
+    if (!dietaRaw || typeof dietaRaw !== 'string') {
+      return res.status(400).json({ error: 'Campo dieta inválido ou ausente.' });
+    }
 
-    for (const diaObj of dieta) {
-      const { dia, refeicoes } = diaObj;
+    const client = await pool.connect();
 
-      const diaResult = await client.query(
-        'INSERT INTO dieta_dia (id_formulario_dieta, dia) VALUES ($1, $2) RETURNING id',
-        [id_formulario_dieta, dia]
-      );
-      const diaId = diaResult.rows[0].id;
+    try {
+      const cleaned = dietaRaw.replace(/```(?:json)?/gi, '').trim();
+      const dieta = JSON.parse(cleaned);
 
-      for (const refeicaoObj of refeicoes) {
-        const { refeicao, alimentos } = refeicaoObj;
+      if (!Array.isArray(dieta)) {
+        return res.status(400).json({ error: 'Formato da dieta inválido. Deve ser um array.' });
+      }
 
-        const refeicaoResult = await client.query(
-          'INSERT INTO dieta_refeicao (id_dia, refeicao) VALUES ($1, $2) RETURNING id',
-          [diaId, refeicao]
+      await client.query('BEGIN');
+
+      for (const diaObj of dieta) {
+        const { dia, refeicoes } = diaObj;
+
+        const diaResult = await client.query(
+          'INSERT INTO dieta_dia (id_formulario_dieta, dia) VALUES ($1, $2) RETURNING id',
+          [id_formulario_dieta, dia]
         );
-        const refeicaoId = refeicaoResult.rows[0].id;
+        const diaId = diaResult.rows[0].id;
 
-        for (const item of alimentos) {
-          let nomeAlimento = null;
-          let quantidade = null;
+        for (const refeicaoObj of refeicoes) {
+          const { refeicao, itens } = refeicaoObj;
 
-          if (typeof item === 'string') {
-            const extraido = extrairQuantidadeEAlimento(item);
-            nomeAlimento = extraido.alimento;
-            quantidade = extraido.quantidade;
-          }
-
-          if (typeof item === 'object' && item.nome) {
-            nomeAlimento = item.nome;
-            quantidade = item.quantidade || 'Não informado';
-          }
-
-          await client.query(
-            'INSERT INTO dieta_alimento (id_refeicao, alimentos, quantidade) VALUES ($1, $2, $3)',
-            [refeicaoId, nomeAlimento, quantidade]
+          const refeicaoResult = await client.query(
+            'INSERT INTO dieta_refeicao (id_dia, refeicao) VALUES ($1, $2) RETURNING id',
+            [diaId, refeicao]
           );
+          const refeicaoId = refeicaoResult.rows[0].id;
+
+          for (const item of itens) {
+            let nomeAlimento = null;
+            let quantidade = null;
+
+            if (typeof item === 'string') {
+              const extraido = extrairQuantidadeEAlimento(item);
+              nomeAlimento = extraido.alimento;
+              quantidade = extraido.quantidade;
+            }
+
+            if (typeof item === 'object' && item.nome) {
+              nomeAlimento = item.nome;
+              quantidade = item.quantidade || 'Não informado';
+            }
+
+            await client.query(
+              'INSERT INTO dieta_alimento (id_refeicao, alimentos, quantidade) VALUES ($1, $2, $3)',
+              [refeicaoId, nomeAlimento, quantidade]
+            );
+          }
         }
       }
+
+      await client.query('COMMIT');
+
+      return res.status(201).json({
+        message: 'Dieta salva com sucesso!',
+        id_usuario,
+        id_formulario_treino,
+        id_formulario_dieta
+      });
+
+    } catch (error) {
+      await client.query('ROLLBACK');
+      console.error('Erro ao salvar dieta:', error);
+      return res.status(500).json({
+        error: 'Erro ao salvar dieta.',
+        details: error.message
+      });
+    } finally {
+      client.release();
     }
-
-    await client.query('COMMIT');
-
-    return res.status(201).json({
-      message: 'Dieta salva com sucesso!',
-      id_usuario,
-      id_formulario_treino,
-      id_formulario_dieta
-    });
-
-  } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('Erro ao salvar dieta:', error);
-    return res.status(500).json({
-      error: 'Erro ao salvar dieta.',
-      details: error.message
-    });
-  } finally {
-    client.release();
-  }
 });
 
 //Localizar dieta por usuario
 router.get('/usuario/:id_usuario', async (req, res) => {
   const { id_usuario } = req.params;
-
+  
   try {
     const result = await pool.query(`
       SELECT 
@@ -116,16 +116,16 @@ router.get('/usuario/:id_usuario', async (req, res) => {
         fd.objetivo,
         fd.status,
         ft.nome_treino
-        FROM formulario_dieta fd
-        LEFT JOIN formulario_treino ft ON fd.id_formulario_treino = ft.id
-        WHERE fd.id_usuario = $1
-        ORDER BY fd.data_criacao DESC
-      `, [id_usuario]);
+      FROM formulario_dieta fd
+      LEFT JOIN formulario_treino ft ON fd.id_formulario_treino = ft.id
+      WHERE fd.id_usuario = $1
+      ORDER BY fd.data_criacao DESC
+    `, [id_usuario]);
 
-      res.status(200).json({dietas: result.rows});
+    res.status(200).json({ dietas: result.rows });
   } catch (error) {
-  console.error('Erro ao buscar dietas do usuário:', error);
-  res.status(500).json({ message: 'Erro ao buscar dietas' });
+    console.error('Erro ao buscar dietas do usuário:', error);
+    res.status(500).json({ message: 'Erro ao buscar dietas' });
   }
 });
 
@@ -135,7 +135,7 @@ router.get('/detalhada/:id', async (req, res) => {
 
   try {
     const dietaRes = await pool.query(`
-      SELECT nome_dieta AS nome
+      SELECT nome_dieta AS nome, status AS ativo 
       FROM formulario_dieta
       WHERE id = $1
     `, [id]);

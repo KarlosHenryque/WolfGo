@@ -9,7 +9,7 @@ function Nutricao() {
   const navigate = useNavigate();
   const [formularios, setFormularios] = useState([]);
   const [dietas, setDietas] = useState([]);
-  const [filtroStatus, setFiltroStatus] = useState("ativo"); // <-- só muda aqui
+  const [filtroStatus, setFiltroStatus] = useState("ativo"); 
   const idUser = localStorage.getItem("usuarioId");
 
   useEffect(() => {
@@ -45,13 +45,11 @@ function Nutricao() {
     }
 
     const opcoesTreino = formularios
-      .map(
-        (f) =>
-          `<option value="${f.id}">Formulário #${f.id} - ${
-            f.nome ? f.nome : "Sem nome"
-          } - ${new Date(f.data_criacao).toLocaleDateString("pt-BR")}</option>`
-      )
-      .join("");
+    .map(
+      (f) =>
+        `<option value="${f.id}">Treino: ${f.nomeTreino} - ${new Date(f.data_criacao).toLocaleDateString("pt-BR")}</option>`
+    )
+    .join("");
 
     Swal.fire({
       title: "Formulário Nutricional",
@@ -153,9 +151,7 @@ function Nutricao() {
         </div>
 
         <div className="treino-container-lixeira">
-          {dietasFiltradas.length === 0 ? (
-            <p>Nenhuma dieta cadastrada.</p>
-          ) : (
+          {dietasFiltradas.length === 0 ? null : (
             dietasFiltradas.map((dieta) => (
               <div
                 key={dieta.id_formulario_dieta}

@@ -20,23 +20,54 @@ function DietaDetalhada() {
   const [dias, setDias] = useState([]);
   const [nomeGrupoMuscular, setNomeGrupoMuscular] = useState('');
   const [ativo, setAtivo] = useState(false);  
+  const [erro, setErro] = useState('');
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/dieta/detalhada/${id}`)
-      .then(res => res.json())
-      .then(data => {
-        setDias(data.dias || []);
-        setNomeGrupoMuscular(data.dieta?.nome || '');
-        setAtivo(data.dieta?.ativo === true || data.dieta?.ativo === "true");  
-      })
-      .catch(err => {
-        console.error('Erro ao buscar dieta detalhada:', err);
-      });
-  }, [id]);
+  if (!id) {
+    setErro("Dieta não especificada.");
+    return;
+  }
 
-  const handleVoltar = () => {
-    navigate('/nutricao');
-  };
+  Swal.fire({
+      html: '<h2 style="font-size:40px; margin: 0 0 50px; color: #ffb700;">Aguardando geração da dieta...</h2>',
+      width: "900px",
+      padding: "3em",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+
+    const fetchDieta = axios.get(`http://localhost:5000/api/dieta/detalhada/${id}`);
+    const delay = new Promise((resolve) => setTimeout(resolve, 1000));
+
+    Promise.all([fetchDieta, delay])
+      .then(([response]) => {
+        Swal.close();
+
+        if (!response.data || !response.data.dias || response.data.dias.length === 0) {
+          Swal.fire({
+            icon: "error",
+            title: "Ops...",
+            text: "Dieta não encontrada.",
+            confirmButtonText: "OK",
+          }).then(() => navigate("/nutricao"));
+          return;
+        }
+
+        setDias(response.data.dias);
+        setNomeGrupoMuscular(response.data.dieta?.nome || "");
+        setAtivo(response.data.dieta?.ativo === true || response.data.dieta?.ativo === "true");
+      })
+      .catch(() => {
+        Swal.close();
+        Swal.fire({
+          icon: "error",
+          title: "Dieta ainda não criada",
+          text: "Tente novamente mais tarde.",
+          confirmButtonText: "OK",
+        }).then(() => navigate("/nutricao"));
+      });
+  }, [id, navigate]);
+
 
   const handleKeyDown = (event, fn) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -152,27 +183,53 @@ function DietaDetalhada() {
 
   return (
     <Layout>
-      <div className="dieta-detalhada-container">
-        <div className="dieta-header-icons">
-          <FaArrowCircleLeft className="icon-dieta" onClick={handleVoltar} title="Voltar" />
-            <div className="dieta-icons-group">
-              <FaClipboardList className="icon-lista" />
-              <FaRegFilePdf className="icon-dieta" onClick={exportarPDF} title="Exportar PDF" />
+        <div className="header-dieta-container">
+          <div
+            className="dieta-container-voltar"
+            onClick={() => navigate("/nutricao")}
+            onKeyDown={(e) => handleKeyDown(e, () => navigate("/nutricao"))}
+            aria-label="Voltar para tela de treinos"
+            role="button"
+            tabIndex={0}
+          >
+            <FaArrowCircleLeft />
+          </div>
+  
+          <div className="dieta-container-actions">
             <div
-              className="treino-container-lixeira"
-              onClick={ativo ? confirmarDesativacao : confirmarAtivacao}
-              onKeyDown={(e) =>
-                handleKeyDown(e, ativo ? confirmarDesativacao : confirmarAtivacao)
-              }
-              aria-label={ativo ? "Desativar dieta" : "Ativar dieta"}
+              className="dieta-container-pdf"
+              onClick={exportarPDF}
+              onKeyDown={(e) => handleKeyDown(e, exportarPDF)}
+              aria-label="Gerar PDF do treino"
               role="button"
               tabIndex={0}
-              title={ativo ? "Desativar dieta" : "Ativar dieta"}
-              style={{ cursor: 'pointer' }}
             >
-              {ativo ? <FaTrashAlt /> : <FaRegCheckCircle />}
+              <FaRegFilePdf />
             </div>
-          </div>
+  
+            <div
+              className="dieta-container-fixa"
+              aria-label="Ver formulário"
+              role="button"
+              tabIndex={0}
+            >
+              <FaClipboardList />
+            </div>
+  
+              <div
+                className="dieta-container-lixeira"
+                onClick={ativo ? confirmarDesativacao : confirmarAtivacao}
+                onKeyDown={(e) =>
+                  handleKeyDown(e, ativo ? confirmarDesativacao : confirmarAtivacao)
+                }
+                aria-label={ativo ? "Desativar treino" : "Ativar Treino"}
+                role="button"
+                tabIndex={0}
+                title={ativo ? "Desativar treino" : "Ativar Treino"}
+              >
+                {ativo ? <FaTrashAlt /> : <FaRegCheckCircle />}
+              </div>
+            </div>
         </div>
 
         {dias.map((dia, index) => (
@@ -199,7 +256,6 @@ function DietaDetalhada() {
             </table>
           </div>
         ))}
-      </div>
     </Layout>
   );
 }
