@@ -27,7 +27,7 @@ function DietaDetalhada() {
       .then(data => {
         setDias(data.dias || []);
         setNomeGrupoMuscular(data.dieta?.nome || '');
-        setAtivo(data.dieta?.ativo === true || data.dieta?.ativo === "true");  
+        setAtivo(data.dieta?.ativo === true || data.dieta?.ativo === "true");
       })
       .catch(err => {
         console.error('Erro ao buscar dieta detalhada:', err);
@@ -152,27 +152,53 @@ function DietaDetalhada() {
 
   return (
     <Layout>
-      <div className="dieta-detalhada-container">
-        <div className="dieta-header-icons">
-          <FaArrowCircleLeft className="icon-dieta" onClick={handleVoltar} title="Voltar" />
-            <div className="dieta-icons-group">
-              <FaClipboardList className="icon-lista" />
-              <FaRegFilePdf className="icon-dieta" onClick={exportarPDF} title="Exportar PDF" />
+        <div className="header-dieta-container">
+          <div
+            className="dieta-container-voltar"
+            onClick={() => navigate("/nutricao")}
+            onKeyDown={(e) => handleKeyDown(e, () => navigate("/nutricao"))}
+            aria-label="Voltar para tela de treinos"
+            role="button"
+            tabIndex={0}
+          >
+            <FaArrowCircleLeft />
+          </div>
+  
+          <div className="dieta-container-actions">
             <div
-              className="treino-container-lixeira"
-              onClick={ativo ? confirmarDesativacao : confirmarAtivacao}
-              onKeyDown={(e) =>
-                handleKeyDown(e, ativo ? confirmarDesativacao : confirmarAtivacao)
-              }
-              aria-label={ativo ? "Desativar dieta" : "Ativar dieta"}
+              className="dieta-container-pdf"
+              onClick={exportarPDF}
+              onKeyDown={(e) => handleKeyDown(e, exportarPDF)}
+              aria-label="Gerar PDF do treino"
               role="button"
               tabIndex={0}
-              title={ativo ? "Desativar dieta" : "Ativar dieta"}
-              style={{ cursor: 'pointer' }}
             >
-              {ativo ? <FaTrashAlt /> : <FaRegCheckCircle />}
+              <FaRegFilePdf />
             </div>
-          </div>
+  
+            <div
+              className="dieta-container-fixa"
+              aria-label="Ver formulário"
+              role="button"
+              tabIndex={0}
+            >
+              <FaClipboardList />
+            </div>
+  
+              <div
+                className="dieta-container-lixeira"
+                onClick={ativo ? confirmarDesativacao : confirmarAtivacao}
+                onKeyDown={(e) =>
+                  handleKeyDown(e, ativo ? confirmarDesativacao : confirmarAtivacao)
+                }
+                aria-label={ativo ? "Desativar treino" : "Ativar Treino"}
+                role="button"
+                tabIndex={0}
+                title={ativo ? "Desativar treino" : "Ativar Treino"}
+              >
+                {ativo ? <FaTrashAlt /> : <FaRegCheckCircle />}
+              </div>
+            </div>
         </div>
 
         {dias.map((dia, index) => (
@@ -199,7 +225,6 @@ function DietaDetalhada() {
             </table>
           </div>
         ))}
-      </div>
     </Layout>
   );
 }
