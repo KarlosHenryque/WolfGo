@@ -20,23 +20,54 @@ function DietaDetalhada() {
   const [dias, setDias] = useState([]);
   const [nomeGrupoMuscular, setNomeGrupoMuscular] = useState('');
   const [ativo, setAtivo] = useState(false);  
+  const [erro, setErro] = useState('');
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/dieta/detalhada/${id}`)
-      .then(res => res.json())
-      .then(data => {
-        setDias(data.dias || []);
-        setNomeGrupoMuscular(data.dieta?.nome || '');
-        setAtivo(data.dieta?.ativo === true || data.dieta?.ativo === "true");
-      })
-      .catch(err => {
-        console.error('Erro ao buscar dieta detalhada:', err);
-      });
-  }, [id]);
+  if (!id) {
+    setErro("Dieta não especificada.");
+    return;
+  }
 
-  const handleVoltar = () => {
-    navigate('/nutricao');
-  };
+  Swal.fire({
+      html: '<h2 style="font-size:40px; margin: 0 0 50px; color: #ffb700;">Aguardando geração da dieta...</h2>',
+      width: "900px",
+      padding: "3em",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+
+    const fetchDieta = axios.get(`http://localhost:5000/api/dieta/detalhada/${id}`);
+    const delay = new Promise((resolve) => setTimeout(resolve, 1000));
+
+    Promise.all([fetchDieta, delay])
+      .then(([response]) => {
+        Swal.close();
+
+        if (!response.data || !response.data.dias || response.data.dias.length === 0) {
+          Swal.fire({
+            icon: "error",
+            title: "Ops...",
+            text: "Dieta não encontrada.",
+            confirmButtonText: "OK",
+          }).then(() => navigate("/nutricao"));
+          return;
+        }
+
+        setDias(response.data.dias);
+        setNomeGrupoMuscular(response.data.dieta?.nome || "");
+        setAtivo(response.data.dieta?.ativo === true || response.data.dieta?.ativo === "true");
+      })
+      .catch(() => {
+        Swal.close();
+        Swal.fire({
+          icon: "error",
+          title: "Dieta ainda não criada",
+          text: "Tente novamente mais tarde.",
+          confirmButtonText: "OK",
+        }).then(() => navigate("/nutricao"));
+      });
+  }, [id, navigate]);
+
 
   const handleKeyDown = (event, fn) => {
     if (event.key === "Enter" || event.key === " ") {
