@@ -57,6 +57,7 @@ function Nutricao() {
       focusConfirm: false,
       showCancelButton: true,
       reverseButtons: true,
+      showCloseButton: true,
       confirmButtonText: "Salvar",
       confirmButtonColor: "#0067A3",
       cancelButtonText: "Cancelar",

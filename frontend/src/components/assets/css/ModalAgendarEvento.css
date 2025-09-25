@@ -1,0 +1,25 @@
+.containerModalAgendarEvento {
+    display: flex; 
+    flex-direction: column; 
+    border-radius: 15px;
+}
+
+.containerModalAgendarEvento input {
+    background-color: #fff;
+    color: #000;
+    font-size: 1rem;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.containerModalAgendarEvento input:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+}
+
+.row-time-date {
+  display: flex;
+  flex-direction: column;
+}

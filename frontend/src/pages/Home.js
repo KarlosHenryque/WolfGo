@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Layout from "../components/Layout";
 import "../assets/css/Home.css";
 
-import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
+import Calendar from '../components/Calendar'
 
 import carrosel01 from '../assets/img/Carrosel01.png';
 import carrosel02 from '../assets/img/Carrosel02.png';
@@ -101,36 +101,10 @@ function Home() {
           pauseTime={3000}
         />
 
-        <p className="subtitle">
-          Sua jornada rumo às suas metas pessoais já começou. A cada dia, você está um passo mais perto de se tornar quem deseja ser!
-        </p>
-
-        <div className="carousel-wrapper">
-          <button className="arrow left" onClick={() => scroll("left")}>
-            <AiOutlineLeft />
-          </button>
-
-          <div className="cards-container-home" ref={carouselRef}>
-            {cards.map((card, index) => (
-              <div
-                className="card"
-                key={index}
-                ref={index === 0 ? cardRef : null}
-              >
-                <img src={card.img} alt={card.title} />
-                <div className="card-label">{card.title}</div>
-              </div>
-            ))}
-          </div>
-
-          <button className="arrow right" onClick={() => scroll("right")}>
-            <AiOutlineRight />
-          </button>
+        <div className="calendar">
+          < Calendar />
         </div>
-
-        <p className="choose-text">
-          Escolha sua modalidade e vá além dos seus limites!
-        </p>
+        
       </div>
     </Layout>
   );

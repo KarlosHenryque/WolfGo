@@ -58,6 +58,7 @@ function Treino() {
       html: ModalFormularioTreino(),
       focusConfirm: false,
       showCancelButton: true,
+      showCloseButton: true,
       confirmButtonText: "Salvar",
       confirmButtonColor: "#0067A3",
       cancelButtonText: "Cancelar",
