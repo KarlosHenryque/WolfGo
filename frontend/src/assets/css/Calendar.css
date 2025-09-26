@@ -1,0 +1,24 @@
+.fc-toolbar .fc-button {
+  background-color: #ffb700;
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 4px;
+  padding: 6px 12px;
+}
+
+.fc-toolbar .fc-button.fc-button-active {
+  background-color: #d18e00; /* cor mais escura ou diferente */
+  color: #fff;
+}
+
+.fc-toolbar .fc-button:hover {
+  background-color: #e0a800;
+  color: white;
+}
+
+.fc-toolbar .fc-button:active {
+  background-color: #c08a00;
+  color: white;
+}
+

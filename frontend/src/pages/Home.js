@@ -103,8 +103,7 @@ function Home() {
 
         <div className="calendar">
           < Calendar />
-        </div>
-        
+        </div>        
       </div>
     </Layout>
   );
