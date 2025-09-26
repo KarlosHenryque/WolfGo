@@ -1,27 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import ptBr from '@fullcalendar/core/locales/pt-br';
 import Swal from 'sweetalert2';
+import { FaCalendarAlt } from "react-icons/fa";
 import { ModalAgendarEvento } from '../components/ModalAgendarEvento';
+import '../assets/css/Calendar.css'
 
 function Calendar() {
   const [eventos, setEventos] = useState([]);
   const usuarioId = localStorage.getItem("usuarioId");
+  const calendarRef = useRef(null);
 
   useEffect(() => {
     if (!usuarioId) return;
 
     fetch(`http://localhost:5000/api/calendar/eventoCadatrado/${usuarioId}`)
       .then(res => res.json())
-      .then(data => {
-        setEventos(data); 
-      })
-      .catch(err => {
-        console.error("Erro ao buscar eventos:", err);
-      });
+      .then(data => setEventos(data))
+      .catch(err => console.error("Erro ao buscar eventos:", err));
   }, [usuarioId]);
 
   const handleDateClick = (arg) => {
@@ -33,12 +32,9 @@ function Calendar() {
       html: ModalAgendarEvento(dataSelecionada),
       confirmButtonText: "Salvar",
       confirmButtonColor: "#00a323ff",
-      denyButtonText: "Editar",
-      denyButtonColor: "#0067A3",
       cancelButtonText: "Cancelar",
       cancelButtonColor: "#ff0000ff",
       showCancelButton: true,
-      showDenyButton: true,
       reverseButtons: true,
       showCloseButton: true,
       focusConfirm: false,
@@ -113,11 +109,11 @@ function Calendar() {
   function renderEventContent(eventInfo) {
     return (
       <div style={{
-        backgroundColor: '#00a323cc',
+        backgroundColor: '#3788d8',
         color: 'white',
         borderRadius: '4px',
         padding: '2px 4px',
-        fontSize: '0.75rem',
+        fontSize: '1rem',
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
@@ -129,8 +125,23 @@ function Calendar() {
     );
   }
 
-  return (
+ return (
+  <div>
+    <input
+      type="date"
+      id="data-filtro"
+      style={{ position: "absolute", left: "-9999px" }}
+      onChange={(e) => {
+        const selectedDate = e.target.value;
+        if (calendarRef.current) {
+          const calendarApi = calendarRef.current.getApi();
+          calendarApi.gotoDate(selectedDate);
+        }
+      }}
+    />
+
     <FullCalendar
+      ref={calendarRef}
       plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
       initialView="dayGridMonth"
       weekends={true}
@@ -139,82 +150,97 @@ function Calendar() {
       dateClick={handleDateClick}
       events={eventos}
       eventContent={renderEventContent}
+      headerToolbar={{
+        left: "prev,next today",
+        center: "title",
+        right: "dayGridMonth,timeGridWeek,timeGridDay",
+      }}
       eventClick={(info) => {
-      const evento = info.event;
-      const titulo = evento.title;
-      const descricao = evento.extendedProps.description || "";
-      const dataISO = evento.startStr.slice(0, 10); 
-      const horarioISO = evento.startStr.slice(11, 16); 
-      Swal.fire({
-        title: "Editar Evento",
-        width: 400,
-        html: `
-        <div class="containerModalAgendarEvento">
-          <input id="event-title" class="swal2-input" placeholder="Título" value="${titulo}" />
-          <input id="event-desc" class="swal2-input" placeholder="Descrição" value="${descricao}" />
-          <input id="event-date" type="date" class="swal2-input" value="${dataISO}" />
-          <input id="event-time" type="time" class="swal2-input" value="${horarioISO}" />
-        </div>
-        `,
-        showCancelButton: true,
-        confirmButtonText: "Salvar",
-        cancelButtonText: "Cancelar",
-        focusConfirm: false,
-        preConfirm: () => {
-          const newTitle = document.getElementById("event-title").value;
-          const newDesc = document.getElementById("event-desc").value;
-          const newDate = document.getElementById("event-date").value;
-          const newTime = document.getElementById("event-time").value;
+        const evento = info.event;
+        const titulo = evento.title;
+        const descricao = evento.extendedProps.description || "";
+        const dataISO = evento.startStr.slice(0, 10);
+        const horarioISO = evento.startStr.slice(11, 16);
 
-          if (!newTitle || !newDate || !newTime) {
-            Swal.showValidationMessage("Título, data e hora são obrigatórios");
-            return false;
-          }
+        Swal.fire({
+          title: "Editar Evento",
+          width: 400,
+          html: `
+            <div class="containerModalAgendarEvento">
+              <input id="event-title" class="swal2-input" placeholder="Título" value="${titulo}" />
+              <input id="event-desc" class="swal2-input" placeholder="Descrição" value="${descricao}" />
+              <input id="event-date" type="date" class="swal2-input" value="${dataISO}" />
+              <input id="event-time" type="time" class="swal2-input" value="${horarioISO}" />
+            </div>
+          `,
+          showCancelButton: true,
+          reverseButtons: true,
+          showCloseButton: true,
+          showDenyButton: true,
+          confirmButtonText: "Editar",
+          confirmButtonColor: "#00a323ff",
+          cancelButtonText: "Cancelar",
+          cancelButtonColor: "#0067A3",
+          denyButtonText: "Excluir",
+          denyButtonColor: "#ff0000ff",
+          focusConfirm: false,
+          preConfirm: () => {
+            const newTitle = document.getElementById("event-title").value;
+            const newDesc = document.getElementById("event-desc").value;
+            const newDate = document.getElementById("event-date").value;
+            const newTime = document.getElementById("event-time").value;
 
-          return { newTitle, newDesc, newDate, newTime };
-        }
-      }).then((result) => {
-        if (result.isConfirmed) {
-          fetch(`http://localhost:5000/api/calendar/editarEvento/${evento.id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              titulo: result.value.newTitle,
-              descricao: result.value.newDesc,
-              data_evento: result.value.newDate,
-              horario: result.value.newTime,
-            }),
-          })
-          .then(async (res) => {
-            if (!res.ok) {
-              const errorData = await res.json();
-              throw new Error(errorData.error || "Erro ao atualizar evento");
+            if (!newTitle || !newDate || !newTime) {
+              Swal.showValidationMessage("Título, data e hora são obrigatórios");
+              return false;
             }
-            return res.json();
-          })
-          .then(() => {
-            Swal.fire({
-              icon: "success",
-              title: "Evento atualizado!",
-              timer: 2000,
-              showConfirmButton: false,
-            });
-            return fetch(`http://localhost:5000/api/calendar/eventoCadatrado/${usuarioId}`);
-          })
-          .then(res => res.json())
-          .then(data => setEventos(data))
-          .catch(err => {
-            Swal.fire({
-              icon: "error",
-              title: "Erro",
-              text: err.message,
-            });
-          });
-        }
-      });
-    }}
+
+            return { newTitle, newDesc, newDate, newTime };
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            fetch(`http://localhost:5000/api/calendar/editarEvento/${evento.id}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                titulo: result.value.newTitle,
+                descricao: result.value.newDesc,
+                data_evento: result.value.newDate,
+                horario: result.value.newTime,
+              }),
+            })
+              .then(async (res) => {
+                if (!res.ok) {
+                  const errorData = await res.json();
+                  throw new Error(errorData.error || "Erro ao atualizar evento");
+                }
+                return res.json();
+              })
+              .then(() => {
+                Swal.fire({
+                  icon: "success",
+                  title: "Evento atualizado!",
+                  timer: 2000,
+                  showConfirmButton: false,
+                });
+
+                return fetch(`http://localhost:5000/api/calendar/eventoCadatrado/${usuarioId}`);
+              })
+              .then(res => res.json())
+              .then(data => setEventos(data))
+              .catch(err => {
+                Swal.fire({
+                  icon: "error",
+                  title: "Erro",
+                  text: err.message,
+                });
+              });
+          }
+        });
+      }}
     />
-  );
+  </div>
+);
 }
 
 export default Calendar;
