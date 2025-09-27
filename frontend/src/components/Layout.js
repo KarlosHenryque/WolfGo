@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Swal from "sweetalert2"; 
 import './assets/css/Layout.css';
 import logo from '../assets/img/Logo.png';
 
@@ -9,12 +10,25 @@ import { LuSalad } from "react-icons/lu";
 import { IoMdExit } from "react-icons/io";
 import { GiWeightLiftingUp } from "react-icons/gi";
 
+import { PerfilUsuario } from '../components/PerfilUsuario';
+
 function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
+  const idUser = localStorage.getItem("usuarioId");
+
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const toggleUserMenu = () => setUserMenuOpen(!userMenuOpen);
+
+  const abrirPerfil = () => {
+    if (!idUser) {
+      Swal.fire('Erro', 'Usuário não autenticado', 'error');
+      return;
+    }
+    PerfilUsuario({ id: idUser });
+    setUserMenuOpen(false);
+  };
 
   return (
     <div className="layout-container">
@@ -33,7 +47,7 @@ function Layout({ children }) {
           {userMenuOpen && (
             <div className="user-dropdown">
               <ul>
-                <li><a href="#">Perfil</a></li>
+                <li><a onClick={abrirPerfil}>Perfil</a></li>
                 <li><a href="#">Configurações</a></li>
                 <li><a href="/">Sair</a></li>
               </ul>

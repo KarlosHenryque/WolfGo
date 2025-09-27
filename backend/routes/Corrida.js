@@ -67,7 +67,7 @@ router.get('/:id_usuario', async (req, res) => {
 
   try {
     const result = await pool.query(
-      'SELECT data_criacao, distancia_km, rota FROM percurso WHERE id_usuario = $1 ORDER BY data_criacao DESC',
+      'SELECT id, data_criacao, distancia_km, rota FROM percurso WHERE id_usuario = $1 AND status = true ORDER BY data_criacao DESC',
       [id_usuario]
     );
 
@@ -75,6 +75,45 @@ router.get('/:id_usuario', async (req, res) => {
   } catch (error) {
     console.error('Erro ao buscar corridas:', error);
     res.status(500).json({ mensagem: 'Erro interno do servidor' });
+  }
+});
+
+router.delete('/desativarPercurso/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const query = `UPDATE percurso SET status = false WHERE id = $1 RETURNING *`;
+    const result = await pool.query(query, [id]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Evento não encontrado' });
+    }
+    res.json({ mensagem: 'Evento desativado com sucesso' });
+  } catch (error) {
+    console.error('Erro ao desativar evento:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+router.put('/ativarPercurso/:id', async (req, res) => {
+  const { id } = req.params;
+
+  const query = `
+    UPDATE percurso
+    SET status = true
+    WHERE id = $1
+    RETURNING *;
+  `;
+
+  try {
+    const resultado = await pool.query(query, [id]);
+
+    if (resultado.rowCount === 0) {
+      return res.status(404).json({ error: 'Evento não encontrado' });
+    }
+
+    res.status(200).json({ message: 'Evento ativado com sucesso', evento: resultado.rows[0] });
+  } catch (error) {
+    console.error('Erro ao ativar evento:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
 

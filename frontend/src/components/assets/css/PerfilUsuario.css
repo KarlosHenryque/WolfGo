@@ -1,0 +1,60 @@
+.perfil-container {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: #333;
+}
+
+#fotoPerfilPreview {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 0; 
+    box-shadow: 0 0 8px rgba(255, 183, 0, 0.6); 
+    border: 2px solid #ffb700;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#inputFotoPerfil {
+    display: none;
+}
+
+.btn-upload {
+    display: inline-block;
+    margin-top: 15px; 
+    padding: 10px 20px;
+    background-color: #ffb700;
+    color: white;
+    font-weight: 600;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+    box-shadow: 0 4px 10px rgba(255, 183, 0, 0.6);
+}
+
+.btn-upload:hover {
+    background-color: #e6a700; 
+    box-shadow: 0 6px 14px rgba(230, 167, 0, 0.8);
+}
+
+.perfil-info {
+    text-align: center;
+    margin-top: 25px;
+    max-width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.5;
+}
+
+.perfil-info p {
+    margin: 8px 0;
+    color: #fff;
+}
+
+.perfil-info strong {
+    color: #fff;
+}

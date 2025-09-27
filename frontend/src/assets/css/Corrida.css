@@ -88,3 +88,13 @@
   background-color: var(--cor-fundo-botao-icone-hover);
   color: var(--cor-texto-botao-icone-hover);
 }
+
+.btn-desativar svg {
+  fill: white; 
+  transition: fill 0.3s ease;
+}
+
+.btn-desativar:hover svg {
+  fill: #ff0000; 
+  cursor: pointer;
+}

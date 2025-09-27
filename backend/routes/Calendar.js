@@ -31,7 +31,7 @@ router.get('/eventoCadatrado/:id_usuario', async (req, res) => {
     const query = `
       SELECT id, titulo, descricao, horario, data_evento
       FROM calendario_evento
-      WHERE id_usuario = $1
+      WHERE id_usuario = $1 AND status = true
     `;
     const result = await pool.query(query, [id_usuario]);
 
@@ -81,6 +81,43 @@ router.put('/editarEvento/:id', async (req, res) => {
   }
 });
 
+router.put('/desativarEvento/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const query = `UPDATE calendario_evento SET status = false WHERE id = $1 RETURNING *`;
+    const result = await pool.query(query, [id]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Evento não encontrado' });
+    }
+    res.json({ mensagem: 'Evento desativado com sucesso' });
+  } catch (error) {
+    console.error('Erro ao desativar evento:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
 
+router.put('/ativarEvento/:id', async (req, res) => {
+  const { id } = req.params;
+
+  const query = `
+    UPDATE calendario_evento
+    SET status = true
+    WHERE id = $1
+    RETURNING *;
+  `;
+
+  try {
+    const resultado = await pool.query(query, [id]);
+
+    if (resultado.rowCount === 0) {
+      return res.status(404).json({ error: 'Evento não encontrado' });
+    }
+
+    res.status(200).json({ message: 'Evento ativado com sucesso', evento: resultado.rows[0] });
+  } catch (error) {
+    console.error('Erro ao ativar evento:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
 
 module.exports = router;
