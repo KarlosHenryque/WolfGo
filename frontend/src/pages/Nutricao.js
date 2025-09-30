@@ -10,6 +10,7 @@ function Nutricao() {
   const [formularios, setFormularios] = useState([]);
   const [dietas, setDietas] = useState([]);
   const [filtroStatus, setFiltroStatus] = useState("ativo"); 
+  const [filtro, setFiltro] = useState("");
   const idUser = localStorage.getItem("usuarioId");
 
   useEffect(() => {
@@ -126,9 +127,16 @@ function Nutricao() {
   };
 
   const dietasFiltradas = dietas.filter((dieta) => {
-    if (filtroStatus === "todos") return true;
-    if (filtroStatus === "ativo") return dieta.status === true;       
-    if (filtroStatus === "desativado") return dieta.status === false; 
+    if (filtroStatus === "ativo" && dieta.status !== true) return false;
+    if (filtroStatus === "desativado" && dieta.status !== false) return false;
+
+    if (filtro.trim() !== "") {
+      const termoBusca = filtro.toLowerCase();
+      if (!dieta.nome_dieta.toLowerCase().includes(termoBusca)) {
+        return false;
+      }
+    }
+
     return true;
   });
 
@@ -147,7 +155,7 @@ function Nutricao() {
         </select>
 
         <div className="input-buscar-treino">
-          <input type="text" placeholder="Buscar dieta" disabled />
+          <input type="text" placeholder="Buscar dieta" value={filtro} onChange={(e) => setFiltro(e.target.value)}/>
           <button onClick={modalFormularioNutricao}>+</button>
         </div>
 
