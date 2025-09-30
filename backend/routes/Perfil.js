@@ -32,8 +32,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-
-
 // Atualizar foto do usuário (com imagem em base64)
 router.post('/foto/:id', async (req, res) => {
   const { id } = req.params;

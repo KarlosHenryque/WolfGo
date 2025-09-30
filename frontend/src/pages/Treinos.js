@@ -9,6 +9,7 @@ import "../assets/css/Treinos.css";
 function Treino() {
   const [treinos, setTreinos] = useState([]);
   const [filtroStatus, setFiltroStatus] = useState("ativo"); 
+  const [filtro, setFiltro] = useState("");
   const navigate = useNavigate();
 
   const idUser = localStorage.getItem("usuarioId");
@@ -47,9 +48,17 @@ function Treino() {
   };
 
   const treinosFiltrados = treinos.filter((treino) => {
-    if (filtroStatus === "ativo") return treino.status === true;
-    if (filtroStatus === "desativado") return treino.status === false;
-    return true; 
+    if (filtroStatus === "ativo" && treino.status !== true) return false;
+    if (filtroStatus === "desativado" && treino.status !== false) return false;
+
+    if (filtro.trim() !== "") {
+      const termoBusca = filtro.toLowerCase();
+      if (!treino.nome.toLowerCase().includes(termoBusca)) {
+        return false;
+      }
+    }
+
+    return true;
   });
 
   const modalFormulario = () => {
@@ -170,7 +179,12 @@ function Treino() {
         </select>
 
         <div className="input-buscar-treino">
-          <input type="text" placeholder="Buscar treino" />
+          <input
+            type="text"
+            placeholder="Buscar treino"
+            value={filtro}
+            onChange={(e) => setFiltro(e.target.value)}
+          />
           <button onClick={modalFormulario}>+</button>
         </div>
 

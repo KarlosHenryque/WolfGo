@@ -18,6 +18,11 @@
   margin-bottom: 20px;
 }
 
+.input-buscar-treino input {
+  color: #000;           
+  background-color: #fff; 
+}
+
 .input-buscar-treino {
   display: flex;
   justify-content: center;

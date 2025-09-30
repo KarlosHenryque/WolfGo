@@ -127,25 +127,17 @@ function FixaTreino() {
   };
 
   const gerarPDF = async () => {
-    const doc = new jsPDF();
-    let y = 20;
+  const doc = new jsPDF();
+  let y = 20;
 
     doc.setFontSize(18);
     doc.setTextColor(0, 102, 204);
     doc.text("Ficha de Treino", 105, y, { align: "center" });
-    y += 10;
+    y += 5;
 
     try {
       const res = await axios.get(`http://localhost:5000/api/formulario/${id}`);
-      const form = res.data;
-
-      doc.setFontSize(12);
-      doc.setTextColor(0);
-      doc.text(`Nome: ${form.nome}`, 10, y);
-      doc.text(`Objetivo: ${form.objetivo}`, 10, y + 6);
-      doc.text(`Experiência: ${form.experiencia}`, 10, y + 12);
-      doc.text(`Lesão: ${form.alguma_lesao || "Nenhuma"}`, 10, y + 18);
-      y += 30;
+      y += 5; 
     } catch (err) {
       console.error("Erro ao buscar formulário:", err);
     }
@@ -154,7 +146,7 @@ function FixaTreino() {
       treino.forEach((item) => {
         if (y > 230) {
           doc.addPage();
-          y = 20;
+          y = 20; 
         }
 
         const startY = y;
