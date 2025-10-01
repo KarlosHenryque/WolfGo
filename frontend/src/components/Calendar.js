@@ -15,7 +15,7 @@ function Calendar() {
 
   const fetchEventos = () => {
     if (!usuarioId) return;
-    fetch(`http://localhost:5000/api/calendar/eventoCadatrado/${usuarioId}`)
+    fetch(`http://localhost:5000/api/calendar/eventoCadastrado/${usuarioId}`)
       .then((res) => res.json())
       .then((data) => setEventos(data))
       .catch((err) =>

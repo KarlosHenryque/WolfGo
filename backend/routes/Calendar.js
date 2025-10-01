@@ -24,7 +24,7 @@ router.post('/cadastrarEvento', async (req, res) => {
   }
 });
 
-router.get('/eventoCadatrado/:id_usuario', async (req, res) => {
+router.get('/eventoCadastrado/:id_usuario', async (req, res) => {
   const { id_usuario } = req.params;
 
   try {
