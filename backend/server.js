@@ -10,6 +10,7 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 const Login = require('./routes/Login');
 const Register = require('./routes/Register');
+const RecuperarSenha = require('./routes/RecuperarSenha')
 const Calendar = require('./routes/Calendar');
 const Perfil = require('./routes/Perfil');
 const FormularioTreino = require('./routes/FormularioTreino');
@@ -22,6 +23,7 @@ const Dieta = require('./routes/Dieta')
 app.use('/api/login', Login);
 app.use('/api/register', Register);
 app.use('/api/calendar', Calendar);
+app.use('/api/recuperarSenha', RecuperarSenha);
 app.use('/api/perfil', Perfil);
 app.use('/api/formulario', FormularioTreino);
 app.use('/api/treino', TreinoIa);
