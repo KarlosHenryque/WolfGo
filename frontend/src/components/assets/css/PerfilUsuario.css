@@ -1,28 +1,23 @@
-.perfil-container {
-    text-align: center;
-    font-family: Arial, sans-serif;
-    font-size: 16px;
-    color: #333;
+.config-perfil-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
-#fotoPerfilPreview {
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 0; 
-    box-shadow: 0 0 8px rgba(255, 183, 0, 0.6); 
-    border: 2px solid #ffb700;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+.config-perfil-container img {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
 }
 
 #inputFotoPerfil {
-    display: none;
+  display: none;
 }
 
-.btn-upload {
+.config-btn-upload {
     display: inline-block;
     margin-top: 15px; 
     padding: 10px 20px;
@@ -36,25 +31,48 @@
     box-shadow: 0 4px 10px rgba(255, 183, 0, 0.6);
 }
 
-.btn-upload:hover {
+.config-btn-upload:hover {
     background-color: #e6a700; 
     box-shadow: 0 6px 14px rgba(230, 167, 0, 0.8);
 }
 
 .perfil-info {
-    text-align: center;
-    margin-top: 25px;
-    max-width: 350px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  width: 100%;
+  margin-top: 1rem;
 }
 
-.perfil-info p {
-    margin: 8px 0;
-    color: #fff;
+.config-input {
+  padding: 0.6em 1em;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 0.95rem;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #fff;
+  color: #333;
+  transition: border-color 0.3s ease;
 }
 
-.perfil-info strong {
-    color: #fff;
+.config-input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.15);
+}
+
+.config-btn-alterar-senha {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 0.6em 1.2em;
+  border-radius: 5px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.config-btn-alterar-senha:hover {
+  background-color: #0056b3;
 }
