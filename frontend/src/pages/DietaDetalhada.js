@@ -181,6 +181,43 @@ function DietaDetalhada() {
     doc.save(`dieta_${id}.pdf`);
   };
 
+  const abrirModalFormulario = async () => {
+    try {
+      const res = await axios.get(`http://localhost:5000/api/nutricao/${id}`);
+      const form = res.data;
+
+      Swal.fire({
+        title: "Formulário de Dieta",
+        html: `
+          <div class="modal-formulario" style="text-align: center">
+            <p><strong>Nome da Dieta:</strong> ${form.nome}</p>
+            <p><strong>Nível de Atividade:</strong> ${form.nivel_atividade}</p>
+            <p><strong>Preferências Alimentares:</strong> ${form.preferencias_alimentares}</p>
+            <p><strong>Alergias:</strong> ${form.alergia || "Nenhuma"}</p>
+            <p><strong>Utiliza Suplemento:</strong> ${form.utiliza_suplemento ? "Sim" : "Não"}</p>
+            <p><strong>Uso de Medicação:</strong> ${form.uso_medicacao || "Nenhuma"}</p>
+            <p><strong>Objetivo:</strong> ${form.objetivo}</p>
+            <p><strong>Frequência de Atividade:</strong> ${form.frequencia_atividade}</p>
+            <p><strong>Qualidade do Sono:</strong> ${form.qualidade_sono}</p>
+          </div>
+        `,
+        width: "500px",
+        confirmButtonText: "Fechar",
+        confirmButtonColor: "#ffb700",
+        customClass: {
+          popup: "swal2-border-radius",
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        icon: "error",
+        title: "Erro",
+        text: "Não foi possível carregar os dados do formulário.",
+      });
+    }
+  };
+
   return (
     <Layout>
         <div className="header-dieta-container">
@@ -210,6 +247,7 @@ function DietaDetalhada() {
             <div
               className="dieta-container-fixa"
               aria-label="Ver formulário"
+              onClick={abrirModalFormulario}
               role="button"
               tabIndex={0}
             >

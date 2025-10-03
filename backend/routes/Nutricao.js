@@ -121,4 +121,41 @@ router.post('/:id_usuario', async (req, res) => {
   }
 });
 
+// Buscar formulário de dieta por ID da dieta
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const query = `
+      SELECT 
+        id_formulario_treino AS id_formulario,
+        nome_dieta AS nome,
+        nivel_atividade,
+        preferencias_alimentares,
+        alergia,
+        utiliza_suplemento,
+        uso_medicacao,
+        objetivo,
+        frequencia_atividade,
+        qualidade_sono,
+        id_usuario
+      FROM formulario_dieta
+      WHERE id = $1
+      LIMIT 1;
+    `;
+
+    const result = await pool.query(query, [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'Formulário não encontrado' });
+    }
+
+    res.status(200).json(result.rows[0]);
+
+  } catch (error) {
+    console.error('Erro ao buscar formulário:', error);
+    res.status(500).json({ message: 'Erro interno ao buscar formulário' });
+  }
+});
+
 module.exports = router;
