@@ -46,8 +46,8 @@ function DietaDetalhada() {
         if (!response.data || !response.data.dias || response.data.dias.length === 0) {
           Swal.fire({
             icon: "error",
-            title: "Ops...",
-            text: "Dieta não encontrada.",
+            title: "Dieta ainda não criada",
+            text: "Tente novamente mais tarde.",
             confirmButtonText: "OK",
           }).then(() => navigate("/nutricao"));
           return;

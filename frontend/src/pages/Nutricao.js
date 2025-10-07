@@ -13,6 +13,19 @@ function Nutricao() {
   const [filtro, setFiltro] = useState("");
   const idUser = localStorage.getItem("usuarioId");
 
+  const carregarDietas = () => {
+    fetch(`http://localhost:5000/api/dieta/usuario/${idUser}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data.dietas)) {
+          setDietas(data.dietas);
+        }
+      })
+      .catch((err) => {
+        console.error("Erro ao buscar dietas:", err);
+      });
+  };
+
   useEffect(() => {
     if (!idUser) return;
 
@@ -27,16 +40,7 @@ function Nutricao() {
         console.error("Erro ao buscar formulários:", err);
       });
 
-    fetch(`http://localhost:5000/api/dieta/usuario/${idUser}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data.dietas)) {
-          setDietas(data.dietas);
-        }
-      })
-      .catch((err) => {
-        console.error("Erro ao buscar dietas:", err);
-      });
+    carregarDietas();
   }, [idUser]);
 
   const modalFormularioNutricao = () => {
@@ -46,11 +50,11 @@ function Nutricao() {
     }
 
     const opcoesTreino = formularios
-    .map(
-      (f) =>
-        `<option value="${f.id}">Treino: ${f.nomeTreino} - ${new Date(f.data_criacao).toLocaleDateString("pt-BR")}</option>`
-    )
-    .join("");
+      .map(
+        (f) =>
+          `<option value="${f.id}">Treino: ${f.nomeTreino} - ${new Date(f.data_criacao).toLocaleDateString("pt-BR")}</option>`
+      )
+      .join("");
 
     Swal.fire({
       title: "Formulário Nutricional",
@@ -114,6 +118,7 @@ function Nutricao() {
           .then((res) => res.json())
           .then((data) => {
             Swal.fire("Sucesso!", data.message || "Dados salvos com sucesso!", "success");
+            carregarDietas(); 
           })
           .catch(() => {
             Swal.fire("Erro", "Erro ao salvar os dados", "error");
@@ -155,7 +160,12 @@ function Nutricao() {
         </select>
 
         <div className="input-buscar-treino">
-          <input type="text" placeholder="Buscar dieta" value={filtro} onChange={(e) => setFiltro(e.target.value)}/>
+          <input
+            type="text"
+            placeholder="Buscar dieta"
+            value={filtro}
+            onChange={(e) => setFiltro(e.target.value)}
+          />
           <button onClick={modalFormularioNutricao}>+</button>
         </div>
 

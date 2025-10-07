@@ -144,7 +144,6 @@ function Treino() {
           .then((data) => {
             Swal.fire("Sucesso!", "Formulario salvo com sucesso.", "success").then(() => {
               setTreinos((oldTreinos) => [
-                ...oldTreinos,
                 {
                   id: data.id || Date.now(),
                   nome: data.nomeTreino || result.value.nomeTreino,
@@ -153,6 +152,7 @@ function Treino() {
                   sexo: data.sexo || result.value.sexo,
                   status: true, 
                 },
+                ...oldTreinos,
               ]);
               Swal.close();
             });
