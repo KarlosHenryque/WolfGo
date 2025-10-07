@@ -6,7 +6,7 @@
   import logo from '../assets/img/Logo.png';
   import bandeira_brasil from '../assets/img/bandeira_brasil.png';
   import { ModalEsqueceuSenha } from '../components/ModalEsqueceuSenha';
-  import { FaEnvelope, FaLock } from 'react-icons/fa';
+  import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 
   function Login() {
     const navigate = useNavigate();
@@ -14,6 +14,7 @@
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
     const [lembrarMe, setLembrarMe] = useState(false);
+    const [mostrarSenha, setMostrarSenha] = useState(false);
     const [erro, setErro] = useState('');
 
     useEffect(() => {
@@ -268,15 +269,22 @@
               />
             </div>
 
-            <div className="input-group">
+            <div className="input-group senha-group">
               <FaLock className="input-icon" />
               <input
-                type="password"
+                type={mostrarSenha ? 'text' : 'password'}
                 placeholder="Senha"
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
                 required
               />
+              <span
+                className="toggle-senha"
+                onClick={() => setMostrarSenha(!mostrarSenha)}
+                style={{ cursor: 'pointer' }}
+              >
+                {mostrarSenha ? <FaEyeSlash /> : <FaEye />}
+              </span>
             </div>
 
             <div className="opcao">
