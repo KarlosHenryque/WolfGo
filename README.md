@@ -30,5 +30,3 @@ Liste aqui as principais funcionalidades que o projeto oferece. Exemplo:
 ### Front‑end  
 - Framework ou biblioteca: React
 - Estilização: CSS puro  
-- Build / bundler: Webpack, Vite, etc  
-
