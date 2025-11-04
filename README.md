@@ -2,11 +2,11 @@
 
 - Nome do projeto: **WolfGo**  
 - Tipo: Front‑end + Back‑end (full‑stack)  
-- Tecnologias principais: JavaScript, CSS, HTML (conforme detectado) :contentReference[oaicite:1]{index=1}  
+- Tecnologias principais: React, Node.js, N8N
 - Estrutura:  
   - `/frontend` — interface de usuário  
   - `/backend` — servidor, API, lógica de negócio  
-- Status: Em desenvolvimento / protótipo (ou conforme o caso)
+- Status: Em desenvolvimento 
 
 ---
 
@@ -15,24 +15,20 @@
 Liste aqui as principais funcionalidades que o projeto oferece. Exemplo:
 
 - Autenticação de usuários (registro, login)  
-- CRUD de algum recurso (por ex: tarefas, posts, formulários)  
+- CRUD 
 - Interface dinâmica para o usuário  
 - API REST para comunicação entre client e servidor  
-- Deploy/configuração pronta para execução local / produção  
-
-> **Observação:** Adapte a lista conforme o que o projeto realmente implementa.
 
 ---
 
 ## 🛠️ Tecnologias e dependências
 
 ### Back‑end  
-- Ambiente: Node.js / Express (ou outro)  
-- Banco de dados: … (MySQL, PostgreSQL, MongoDB, etc)  
-- Outras bibliotecas: descrição das principais  
+- Ambiente: Node.js / Express 
+- Banco de dados: PostgreSQL   
 
 ### Front‑end  
-- Framework ou biblioteca: React, Vue, ou código vanilla JS  
-- Estilização: CSS puro ou framework (Bootstrap, Tailwind etc)  
+- Framework ou biblioteca: React
+- Estilização: CSS puro  
 - Build / bundler: Webpack, Vite, etc  
 
