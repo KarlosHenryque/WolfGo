@@ -4,17 +4,16 @@ import '../assets/css/Exercicios.css';
 import { FaSearch } from 'react-icons/fa';
 
 const bodyPartsList = [
-  { name: "neck" },
-  { name: "lower arms" },
-  { name: "shoulders" },
-  { name: "cardio" },
-  { name: "upper arms" },
-  { name: "chest" },
-  { name: "lower legs" },
-  { name: "back" },
-  { name: "upper legs" },
-  { name: "waist" }
+  { name: "Antebraços"},
+  { name: "Braços" },
+  { name: "Cardio" },
+  { name: "Ombros" },
+  { name: "Peito" },
+  { name: "Inferior" },
+  { name: "Pescoço" },
+  { name: "Cintura" }
 ];
+
 
 function Exercicios() {
   const [exercises, setExercises] = useState([]);
